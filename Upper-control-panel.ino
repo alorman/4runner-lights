@@ -2,8 +2,8 @@
 //2016-17 Alex Lorman
 // Pin 13 has an LED connected on most Arduino boards.
 // give it a name:
-int ledauto = 7;
-int ledhigh = 6;
+int ledauto = 8;
+int ledhigh = 5;
 int buttonauto = 3;
 int buttonhigh = 2;
 int lights = 4;
