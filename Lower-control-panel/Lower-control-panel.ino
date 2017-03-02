@@ -11,9 +11,9 @@ int LightBarValue2 = 0;
 int LightBarValue3 = 0;
 int LightBarValue4 = 0;
 //The environmental sensing inputs
-int IgnitionInput = A5;
-int LightsInput = A4;
-int HighBeamsInput = A3;
+int IgnitionInput = 16;
+int LightsInput = 17;
+int HighBeamsInput = 18;
 //Any other variables
 //Timing variables for the serial link
 int currentMillis;
@@ -36,7 +36,7 @@ void setup()
 }
 void loop()
 {
-  while (Serial1.available() != 0) {//while we have a good serial link
+  //while (Serial1.available() != 0) {//while we have a good serial link
   //establish the state reasds foir tr the inputs
   int StateIgnitionInput = digitalRead(IgnitionInput);
   int StateLights = digitalRead(LightsInput);
@@ -76,5 +76,5 @@ void loop()
     Serial.print(StateLights);
     Serial.print(",H");
     Serial.println(StateHighBeams);
-    }
+    //}
 }
