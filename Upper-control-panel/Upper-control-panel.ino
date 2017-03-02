@@ -85,6 +85,7 @@ void setup() {
   //outputs to lights
   pinMode(lightbarout, OUTPUT);
   Serial.begin(9600);
+  Serial1.begin(9600);
 }
 // --------END SETUP---------
 // the loop routine runs over and over again forever:
@@ -132,17 +133,17 @@ void loop() {
     //Serial.println("Good Batt");
   }//finish battery testing
   //Test to see if we have a good serial link
-  if (Serial.available() != 0) { 
+  if (Serial1.available() != 0) { 
     //incomingByte = Serial.read();
     //Serial.print("serial good ");
     //Serial.println(time, DEC);
     //read the incoming serial bits and parse them
     oldByte = incomingByte;
-    String MarkerString = Serial.readStringUntil(',');
-    int SystemTimeString = Serial.parseInt();
-    statelights = Serial.parseInt();
-    statehighbeams = Serial.parseInt();
-    stateignition = Serial.parseInt();
+    String MarkerString = Serial1.readStringUntil(',');
+    int SystemTimeString = Serial1.parseInt();
+    statelights = Serial1.parseInt();
+    statehighbeams = Serial1.parseInt();
+    stateignition = Serial1.parseInt();
     // ----Main subroutine Logic----
     if (stateignition == HIGH) { //If the car is on run the normal routine
     //Call the main light controls for 1 and 2
@@ -168,10 +169,25 @@ void loop() {
       }
   else { //if we don't have a good link do this stuff
     //Serial.println("serial no good");
-    incomingByte = Serial.read();
+    incomingByte = Serial1.read();
     delay(200);
   }
   //Serial driver begin
+    Serial1.print("TFourR");
+    Serial1.print(",");
+    Serial1.print("T/");
+    Serial1.print(time);
+    Serial1.print(",");
+    Serial1.print(ScaledVoltage);
+    Serial1.print(",");
+    Serial1.print(LightOutputArray[0]);
+    Serial1.print(",");
+    Serial1.print(LightOutputArray[1]);
+    Serial1.print(",");
+    Serial1.print(LightOutputArray[2]);
+    Serial1.println();
+  //Serial driver end
+  //Serial diagnostic driver begin
     Serial.print("TFourR");
     Serial.print(",");
     Serial.print("T/");
@@ -185,7 +201,12 @@ void loop() {
     Serial.print(",");
     Serial.print(LightOutputArray[2]);
     Serial.println();
-  //Serial driver end
+  //Serial diagnostic driver end
+  //Add a copy system to send the serial byte coming from the lower unit to the main unit over usb
+  if (Serial1.available()) {
+    int SerialDigaByte = Serial1.read();
+    Serial.write(SerialDigaByte);
+  }
  }//end main code
 //Light Bar function block
   // Defining all our input variables into the function
