@@ -1,3 +1,5 @@
+//TO MAKE CODE WORK. YOU MUST FORCEFEED IT SERIAL COMMANDS
+//Like this "TFourR,T/31905,I0,L0,H0" as if the lower unit is connected. Timing should change between commands
 //IO pin setup
 //LED outputs to switches
 int S1LEDlower = A0;
