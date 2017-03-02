@@ -2,8 +2,8 @@
 //Like this "TFourR,T/31905,I0,L0,H0" as if the lower unit is connected. Timing should change between commands
 //IO pin setup
 //LED outputs to switches
-int S1LEDlower = A0;
-int S1LEDupper = A1;
+int S1LEDlower = 20;
+int S1LEDupper = 21;
 int S2LEDlower = A3;
 int S2LEDupper = A4;
 int S3LEDlower = A6;
