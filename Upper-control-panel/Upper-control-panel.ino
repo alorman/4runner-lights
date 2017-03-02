@@ -1,17 +1,17 @@
 //IO pin setup
 //LED outputs to switches
-int S1LEDlower = 6;
-int S1LEDupper = 7;
-int S2LEDlower = 8;
-int S2LEDupper = 9;
-int S3LEDlower = 10;
+int S1LEDlower = A0;
+int S1LEDupper = A1;
+int S2LEDlower = A3;
+int S2LEDupper = A4;
+int S3LEDlower = A6;
 int S3LEDupper = 11;
 //Switch inputs
-int S1lower = A4;
-int S1upper = A3;
+int S1lower = 7;
+int S1upper = 8;
 int S2lower = A2;
-int S2upper = A1;
-int S3lower = A0;
+int S2upper = A17;
+int S3lower = A15;
 int S3upper = 13;
 //car environmental inputs
 int lights = 2;
