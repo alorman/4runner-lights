@@ -124,7 +124,8 @@ void loop() {
   int time;
   time = millis();//used in transmitting heartbeat to receiver
   // Call the functions (MAIN LOGIC BLOCK)
-  if (ScaledVoltage < 1150)  //check for low voltage before we get into the functions
+  //int SerialDigaByte = Serial1.read(); //TESTING serial1 stuff
+  /*if (ScaledVoltage < 1150)  //check for low voltage before we get into the functions
   {
     //Serial.println("Low Batt");
   }
@@ -132,6 +133,7 @@ void loop() {
   {
     //Serial.println("Good Batt");
   }//finish battery testing
+ */
   //Test to see if we have a good serial link
   if (Serial1.available() != 0) { 
     //incomingByte = Serial.read();
@@ -173,13 +175,13 @@ void loop() {
     delay(200);
   }
   //Serial driver begin
-    Serial1.print("TFourR");
+    Serial1.print("TFourRpperSerial1");
     Serial1.print(",");
     Serial1.print("T/");
     Serial1.print(time);
     Serial1.print(",");
-    Serial1.print(ScaledVoltage);
-    Serial1.print(",");
+    //Serial1.print(ScaledVoltage);
+    //Serial1.print(",");
     Serial1.print(LightOutputArray[0]);
     Serial1.print(",");
     Serial1.print(LightOutputArray[1]);
@@ -188,13 +190,13 @@ void loop() {
     Serial1.println();
   //Serial driver end
   //Serial diagnostic driver begin
-    Serial.print("TFourR");
+    Serial.print("TFourUpperSerial");
     Serial.print(",");
     Serial.print("T/");
     Serial.print(time);
     Serial.print(",");
-    Serial.print(ScaledVoltage);
-    Serial.print(",");
+    //Serial.print(ScaledVoltage);
+    //Serial.print(",");
     Serial.print(LightOutputArray[0]);
     Serial.print(",");
     Serial.print(LightOutputArray[1]);
@@ -203,10 +205,9 @@ void loop() {
     Serial.println();
   //Serial diagnostic driver end
   //Add a copy system to send the serial byte coming from the lower unit to the main unit over usb
-  if (Serial1.available()) {
-    int SerialDigaByte = Serial1.read();
-    Serial.write(SerialDigaByte);
-  }
+  //if (Serial1.available() > 0) { //if loop seems to work fine
+  //  Serial.println(SerialDigaByte, DEC); //dec seems to make no difference
+  //}
  }//end main code
 //Light Bar function block
   // Defining all our input variables into the function
