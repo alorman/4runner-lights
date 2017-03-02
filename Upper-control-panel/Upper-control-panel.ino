@@ -121,7 +121,7 @@ void loop() {
   int time;
   time = millis();//used in transmitting heartbeat to receiver
   // Call the functions (MAIN LOGIC BLOCK)
-  if (ScaledVoltage > 1150)  //check for low voltage before we get into the functions
+  if (ScaledVoltage < 1150)  //check for low voltage before we get into the functions
   {
     //Serial.println("Low Batt");
   }
