@@ -32,10 +32,11 @@ void setup()
   pinMode(HighBeamsInput, INPUT);
   // start the serial link
   Serial.begin(9600);
+  Serial1.begin(9600);
 }
 void loop()
 {
-  while (Serial.available() != 0) {//while we have a good serial link
+  while (Serial1.available() != 0) {//while we have a good serial link
   //establish the state reasds foir tr the inputs
   int StateIgnitionInput = digitalRead(IgnitionInput);
   int StateLights = digitalRead(LightsInput);
@@ -44,12 +45,12 @@ void loop()
   currentMillis = millis();
   //Setup the serial heartbeat variables
    //read all our serial variables
-    String MarkerString = Serial.readStringUntil(',');
-    SystemTimeString = Serial.parseInt();
-    Voltage = Serial.parseInt();
-    LightBarValue1 = Serial.parseInt();
-    LightBarValue2 = Serial.parseInt();
-    LightBarValue3 = Serial.parseInt();
+    String MarkerString = Serial1.readStringUntil(',');
+    SystemTimeString = Serial1.parseInt();
+    Voltage = Serial1.parseInt();
+    LightBarValue1 = Serial1.parseInt();
+    LightBarValue2 = Serial1.parseInt();
+    LightBarValue3 = Serial1.parseInt();
   	// check to make sure the heartbeat is different before we actually fire lights and that we have the voltage too
     if (PreviousSystemTime != 0&&Voltage >= 1205) {
       analogWrite(LightBarValue1, LightBarOut1);
@@ -58,6 +59,15 @@ void loop()
       analogWrite(LightBarValue4, LightBarOut4);
  	  PreviousSystemTime = SystemTimeString;
     }
+    Serial1.print("TFourR,T/");
+    Serial1.print(currentMillis);
+    Serial1.print(",I");
+    Serial1.print(StateIgnitionInput);
+    Serial1.print(",L");
+    Serial1.print(StateLights);
+    Serial1.print(",H");
+    Serial1.println(StateHighBeams); 
+    //send the byte up the main serial line for diagnostics
     Serial.print("TFourR,T/");
     Serial.print(currentMillis);
     Serial.print(",I");
@@ -65,6 +75,6 @@ void loop()
     Serial.print(",L");
     Serial.print(StateLights);
     Serial.print(",H");
-    Serial.println(StateHighBeams);      
+    Serial.println(StateHighBeams);
     }
 }
