@@ -1,5 +1,7 @@
 //Lower (relay side) control logic for Teensy control board
 //2016-17 Alex Lorman
+//Add i2c v3 (in deps folder)
+#include <i2c_t3.h>
 //IO Pin setup
 int LightBarOut1 = 3;
 int LightBarOut2 = 4;
@@ -40,7 +42,9 @@ void setup()
   pinMode(HighBeamsInput, INPUT);
   // start the serial link
   Serial.begin(9600);
-  Serial1.begin(9600);
+//  Serial1.begin(9600); //deprecated
+  Wire.begin(I2C_SLAVE,0x01, I2C_PINS_18_19, I2C_PULLUP_INT, I2C_RATE_400);
+  Wire.setDefaultTimeout(250000); // 250ms default timeout
 }
 void loop()
 {
