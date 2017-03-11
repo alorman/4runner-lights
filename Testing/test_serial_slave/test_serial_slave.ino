@@ -30,22 +30,21 @@ Serial.println("setup complete...");
 
 void loop() {
 //systemtime ++;
-serialdiagnostic();
+//read the actual sensors in here
+//tempvoltage = tempvoltage2 * (5.0 / 1025); //we're sending this, not receiving it
+digitalWrite(ledpin, ch1); //and write it
+
 if(Serial1.available() > 0){
   serialread();
-  digitalWrite(ledpin, ch1); //and write it
-  delay(20);
+  serialdiagnostic();
   }
-//read the actual sensors in here
- else{
-  serialsend();
- }
-
-delay(50);
+  
+serialsend();
 }
 
+
 void serialread() { //serial read function. Use this area to adjust what gets listened to
-  delay (40);
+  delay (50);
   String discard = Serial1.readStringUntil('-');
   String tempsystemtime = Serial1.readStringUntil('/');
   String tempvoltage = Serial1.readStringUntil('/');
@@ -58,25 +57,24 @@ void serialread() { //serial read function. Use this area to adjust what gets li
   String tempch4 = Serial1.readStringUntil('/');
   String tempch5 = Serial1.readStringUntil('/');
   String tempch6 = Serial1.readStringUntil('/');
-  int tempvoltage2 = tempvoltage.toInt();
-  tempvoltage = tempvoltage2 * (5.0 / 1025); //adjust voltage offset value here
+  //int tempvoltage2 = tempvoltage.toInt(); //We're sending this not receving it
   systemtime = tempsystemtime.toInt();
-  ignition = tempignition.toInt();
-  lights = templights.toInt();
-  highbeams = temphighbeams.toInt();
+  //ignition = tempignition.toInt();
+  //lights = templights.toInt();
+  //highbeams = temphighbeams.toInt();
   ch1 = tempch1.toInt();
-  ch2 = tempch1.toInt();
-  ch3 = tempch1.toInt();
-  ch4 = tempch1.toInt();
-  ch5 = tempch1.toInt();
-  ch6 = tempch1.toInt();
+  ch2 = tempch2.toInt();
+  ch3 = tempch3.toInt();
+  ch4 = tempch4.toInt();
+  ch5 = tempch5.toInt();
+  ch6 = tempch6.toInt();
 }
 void serialdiagnostic() { //diagnostic readout for USB serial port
-    Serial.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/I" + ignition + "/L" + lights + "/H" + highbeams + "/CH1" + ch1 + "/CH2" + ch2 + "/CH3" + ch3 + "/CH4" + ch4 + "/CH5" + ch5 + "/CH6" + ch6 + "/");
+    Serial.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/V" + voltage + "/I" + ignition + "/L" + lights + "/H" + highbeams + "/CH1" + ch1 + "/CH2" + ch2 + "/CH3" + ch3 + "/CH4" + ch4 + "/CH5" + ch5 + "/CH6" + ch6 + "/");
   }
 
 void serialsend()  { //send the outgoing serial data
-  Serial1.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/I" + ignition + "/L" + lights + "/H" + highbeams + "/CH1" + ch1 + "/CH2" + ch2 + "/CH3" + ch3 + "/CH4" + ch4 + "/CH5" + ch5 + "/CH6" + ch6 + "/");
+  Serial1.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/" + voltage + "/" + ignition + "/" + lights + "/" + highbeams + "/" + ch1 + "/" + ch2 + "/" + ch3 + "/" + ch4 + "/" + ch5 + "/" + ch6 + "/");
 }
 
 
