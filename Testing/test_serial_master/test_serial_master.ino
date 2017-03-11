@@ -36,9 +36,9 @@ void loop() {
 
 
  systemtime ++;
-  Serial1.println((String)"*" + systemtime + "/" + ignition + "/" + lights + "/" + highbeams + "/" + ch1 + "/");
+  Serial1.println((String)"TFourR/Upper > Lower/T-" + systemtime + "/" + ignition + "/" + lights + "/" + highbeams + "/" + ch1 + "/");
   //whole shebang again for serial diagnostic
-  Serial.println((String)"TFourR/Upper -> Lower/T-" + systemtime + "/I" + ignition + "/L" + lights + "/H" + highbeams + "/CH1" + ch1 + "/");
+  Serial.println((String)"TFourR/Upper > Lower/T-" + systemtime + "/I" + ignition + "/L" + lights + "/H" + highbeams + "/CH1" + ch1 + "/");
   delay(50);
  // }
  // Serial.println("time no good");

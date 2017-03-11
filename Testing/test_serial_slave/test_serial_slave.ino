@@ -22,7 +22,7 @@ void loop() {
 while(Serial1.available() > 0){
   //Serial1.readStringUntil('\n'); //implicit terminator charachter
   delay (20);
-  String discard = Serial1.readStringUntil('*');
+  String discard = Serial1.readStringUntil('-');
   String temptime = Serial1.readStringUntil('/');
   String tempignition = Serial1.readStringUntil('/');
   String templights = Serial1.readStringUntil('/');
