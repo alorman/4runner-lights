@@ -1,12 +1,21 @@
 // Testing serial1 writing between Teensy boards
 //Master
+//variables for serial
+float voltage = 0;
 int lights = 1;
 int ignition = 0;
 int highbeams = 1;
-int ch1 = 255;
+int ch1 = 0;
+int ch2 = 0;
+int ch3 = 0;
+int ch4 = 0;
+int ch5 = 0;
+int ch6 = 0;
 int systemtime;
+String unitname = "Upper";
+String mastername = "Lower";
+//read write pins
 int ledpin = 13;
-String outgoingbuffer = "";
 
 void setup() {
   // put your setup code here, to run once:
@@ -17,33 +26,49 @@ Serial.println("setup complete...");
 }
 
 void loop() {
-  //while(Serial1.available() > 0){
- 
-  //int temptime = Serial1.parseInt();
-  //int tempignition = Serial1.parseInt();
-  //int templights = Serial1.parseInt();
-  //int temphighbeams = Serial1.parseInt();
-  //int tempch1 = Serial1.parseInt(); //dont actually care about this data
-
- // while (systemtime != temptime) //check to make sure time is reading
- // {
-    //copy the temp incoming values to real ones
-  //ignition = tempignition;
-  //lights = templights;
-  //highbeams = temphighbeams;
-
-   //do our sensor reading here
-
-
  systemtime ++;
-  Serial1.println((String)"TFourR/Upper > Lower/T-" + systemtime + "/" + ignition + "/" + lights + "/" + highbeams + "/" + ch1 + "/");
-  //whole shebang again for serial diagnostic
-  Serial.println((String)"TFourR/Upper > Lower/T-" + systemtime + "/I" + ignition + "/L" + lights + "/H" + highbeams + "/CH1" + ch1 + "/");
-  delay(50);
- // }
- // Serial.println("time no good");
- // delay(200);
+ //make sure to do a sweep of pins before sending
+ serialsend();
+ serialdiagnostic();
+ if(Serial1.available() > 0 ) {
+  serialread();
+ }
+   delay(50);
+}
+
+void serialread() { //serial read function. Use this area to adjust what gets listened to
+  delay (40);
+  String discard = Serial1.readStringUntil('-');
+  String tempsystemtime = Serial1.readStringUntil('/');
+  String tempvoltage = Serial1.readStringUntil('/');
+  String tempignition = Serial1.readStringUntil('/');
+  String templights = Serial1.readStringUntil('/');
+  String temphighbeams = Serial1.readStringUntil('/');
+  String tempch1 = Serial1.readStringUntil('/');
+  String tempch2 = Serial1.readStringUntil('/');
+  String tempch3 = Serial1.readStringUntil('/');
+  String tempch4 = Serial1.readStringUntil('/');
+  String tempch5 = Serial1.readStringUntil('/');
+  String tempch6 = Serial1.readStringUntil('/');
+  int tempvoltage2 = tempvoltage.toInt();
+  tempvoltage = tempvoltage2 * (5.0 / 1025); //adjust voltage offset value here
+  systemtime = tempsystemtime.toInt();
+  ignition = tempignition.toInt();
+  lights = templights.toInt();
+  highbeams = temphighbeams.toInt();
+  ch1 = tempch1.toInt();
+  ch2 = tempch1.toInt();
+  ch3 = tempch1.toInt();
+  ch4 = tempch1.toInt();
+  ch5 = tempch1.toInt();
+  ch6 = tempch1.toInt();
+}
+
+void serialdiagnostic() { //diagnostic readout for USB serial port
+   Serial.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/I" + ignition + "/L" + lights + "/H" + highbeams + "/CH1" + ch1 + "/CH2" + ch2 + "/CH3" + ch3 + "/CH4" + ch4 + "/CH5" + ch5 + "/CH6" + ch6 + "/");
   }
-//Serial.println("Serial 1 not found");
-//delay(200);
-//}
+
+void serialsend()  { //send the outgoing serial data
+  Serial1.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/I" + ignition + "/L" + lights + "/H" + highbeams + "/CH1" + ch1 + "/CH2" + ch2 + "/CH3" + ch3 + "/CH4" + ch4 + "/CH5" + ch5 + "/CH6" + ch6 + "/");
+}
+
