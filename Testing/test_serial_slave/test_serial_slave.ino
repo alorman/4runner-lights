@@ -6,6 +6,8 @@ int highbeams = 1;
 int ch1 = 0;
 String systemtime;
 int ledpin = 13;
+String unitname = "Lower";
+String mastername = "Upper";
 //String outgoingbuffer = "";
 // trying out variables for the incoming buffer here instead
 
@@ -20,22 +22,10 @@ Serial.println("setup complete...");
 
 void loop() {
 while(Serial1.available() > 0){
-  //Serial1.readStringUntil('\n'); //implicit terminator charachter
-  delay (20);
-  String discard = Serial1.readStringUntil('-');
-  String temptime = Serial1.readStringUntil('/');
-  String tempignition = Serial1.readStringUntil('/');
-  String templights = Serial1.readStringUntil('/');
-  String temphighbeams = Serial1.readStringUntil('/');
-  String tempch1 = Serial1.readStringUntil('/');
-  //temptime = systemtime;
-  ignition = tempignition.toInt();
-  lights = templights.toInt();
-  highbeams = temphighbeams.toInt();
-  ch1 = tempch1.toInt();
-  //Serial1.println((String)"TFourR/Lower -> Upper/T-" + systemtime + "/I" + ignition + "/L" + lights + "/H" + highbeams + "/CH1" + ch1 + "/");
-  Serial.println((String)"TFourR/Lower -> Upper/T-" + temptime + "/I" + ignition + "/L" + lights + "/H" + highbeams + "/CH1" + ch1 + "/");
-  discard = "";
+  serialread();
+  serialdiagnostic();
+  Serial1.println((String)"TFourR/Lower -> Upper/T-" + systemtime + "/I" + ignition + "/L" + lights + "/H" + highbeams + "/CH1" + ch1 + "/");
+  
 //systemtime = millis();
  // while (systemtime != temptime) //check to make sure time is reading
  // {
@@ -59,3 +49,28 @@ Serial.println("Serial 1 not found");
 //Serial.println((String)"TFourR/Lower -> Upper/T-" + systemtime + "/I" + ignition + "/L" + lights + "/H" + highbeams + "/CH1" + ch1 + "/");
 delay(200);
 }
+
+void serialread() { //serial read function
+  delay (20);
+  String discard = Serial1.readStringUntil('-');
+  systemtime = Serial1.readStringUntil('/');
+  String tempignition = Serial1.readStringUntil('/');
+  String templights = Serial1.readStringUntil('/');
+  String temphighbeams = Serial1.readStringUntil('/');
+  String tempch1 = Serial1.readStringUntil('/');
+  //temptime = systemtime;
+  ignition = tempignition.toInt();
+  lights = templights.toInt();
+  highbeams = temphighbeams.toInt();
+  ch1 = tempch1.toInt();
+}
+
+void serialdiagnostic() { //diagnostic readout for USB serial port
+    Serial.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/I" + ignition + "/L" + lights + "/H" + highbeams + "/CH1" + ch1 + "/");
+  }
+
+void serialsend()  { //send the outgoing serial data
+  Serial1.println((String)"TFourR/" + unitname + " > " + mastername + "/T-" + systemtime + "/I" + ignition + "/L" + lights + "/H" + highbeams + "/CH1" + ch1 + "/");
+}
+
+
