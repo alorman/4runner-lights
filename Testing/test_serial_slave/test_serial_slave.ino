@@ -1,7 +1,7 @@
 // Testing serial1 writing between Teensy boards
 //Slave
 //serial vars
-float voltage = 0;
+int voltage = 1325;
 int lights = 1;
 int ignition = 0;
 int highbeams = 1;

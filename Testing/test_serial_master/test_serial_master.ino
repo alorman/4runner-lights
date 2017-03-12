@@ -1,7 +1,7 @@
 // Testing serial1 writing between Teensy boards
 //Master
 //serial vars
-float voltage = 0;
+int voltage = 0;
 int lights = 0;
 int ignition = 0;
 int highbeams = 0;
@@ -56,8 +56,7 @@ void serialread() { //serial read function. Use this area to adjust what gets li
   String tempch4 = Serial1.readStringUntil('/');
   String tempch5 = Serial1.readStringUntil('/');
   String tempch6 = Serial1.readStringUntil('/');
-  int tempvoltage2 = tempvoltage.toInt();
-  tempvoltage = tempvoltage2 * (5.0 / 1025); //adjust voltage offset value here
+  voltage = tempvoltage.toInt(); //voltage remains x100
   //systemtime = tempsystemtime.toInt();
   ignition = tempignition.toInt();
   lights = templights.toInt();
@@ -68,6 +67,7 @@ void serialread() { //serial read function. Use this area to adjust what gets li
   //ch4 = tempch4.toInt();
   //ch5 = tempch5.toInt();
   //ch6 = tempch6.toInt();
+  Serial.println(tempvoltage);
 }
 void serialdiagnostic() { //diagnostic readout for USB serial port
     Serial.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/V" + voltage + "/I" + ignition + "/L" + lights + "/H" + highbeams + "/CH1" + ch1 + "/CH2" + ch2 + "/CH3" + ch3 + "/CH4" + ch4 + "/CH5" + ch5 + "/CH6" + ch6 + "/");
