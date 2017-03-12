@@ -14,10 +14,11 @@ int ch6 = 0;
 int systemtime;
 String unitname = "Lower";
 String mastername = "Upper";
+//end vars needed for serial
 
 //output vars
 int ledpin = 13;
-// trying out variables for the incoming buffer here instead
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -31,7 +32,6 @@ Serial.println("setup complete...");
 void loop() {
 //systemtime ++;
 //read the actual sensors in here
-//tempvoltage = tempvoltage2 * (5.0 / 1025); //we're sending this, not receiving it
 digitalWrite(ledpin, ch1); //and write it
 
 if(Serial1.available() > 0){

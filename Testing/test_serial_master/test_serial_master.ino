@@ -14,10 +14,11 @@ int ch6 = 0;
 int systemtime;
 String unitname = "Upper";
 String mastername = "Lower";
+//end vars needed for serial driver
 
 //output vars
 int ledpin = 13;
-// trying out variables for the incoming buffer here instead
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -31,7 +32,7 @@ Serial.println("setup complete...");
 void loop() {
 systemtime ++;
 //read the actual sensors in here
-//digitalWrite(ledpin, ch1); //and write it
+digitalWrite(ledpin, ch1); //and write it
 
 if(Serial1.available() > 0){
   serialread();
@@ -67,7 +68,6 @@ void serialread() { //serial read function. Use this area to adjust what gets li
   //ch4 = tempch4.toInt();
   //ch5 = tempch5.toInt();
   //ch6 = tempch6.toInt();
-  Serial.println(tempvoltage);
 }
 void serialdiagnostic() { //diagnostic readout for USB serial port
     Serial.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/V" + voltage + "/I" + ignition + "/L" + lights + "/H" + highbeams + "/CH1" + ch1 + "/CH2" + ch2 + "/CH3" + ch3 + "/CH4" + ch4 + "/CH5" + ch5 + "/CH6" + ch6 + "/");
