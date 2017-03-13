@@ -2,23 +2,44 @@
 //2016-17 Alex Lorman
 // Pin 13 has an LED connected on most Arduino boards.
 // give it a name:
-int ledauto = 8;
-int ledhigh = 5;
-int buttonauto = 3;
-int buttonhigh = 2;
-int lights = 4;
-int highbeams = 5;
-int lightbarout = 8;
-int ignitioninput = 9;
+//IO pin setup
+//LED outputs to switches
+int S1LEDlower = 6;
+int S1LEDupper = 7;
+int S2LEDlower = 8;
+int S2LEDupper = 9;
+int S3LEDlower = 10;
+int S3LEDupper = 11;
+//Switch inputs
+int S1lower = A4;
+int S1upper = A3;
+int S2lower = A2;
+int S2upper = A1;
+int S3lower = A0;
+int S3upper = 13;
+//car environmental inputs
+int lights = 2;
+int highbeams = 3;
+int ignitioninput = 4;
+int voltagesense = A5;
+//outputs
+int lightbarout = 10;
+//other counters and variables
 unsigned long previousmillis = 0; // undevolt variable
 const long undervoltinterval = 1000; // undervolt timing
 const long undervoltblinks = 5; //undervolt blinks
-int currentblinks = 0; //undervolt current blinks//added to main init routine NOT void setup (deleted = 0)
-int WorkingOverrideState = 0; //need
-int WorkingOverrideCount = 0;//need
-int PreviousOverrideState1 = 0; //will compile if in the run loop too
-int PreviousOverrideState2 = 0;//call for functionizing override
-int WorkingPreviousOverrideState = 0; //make and array of the different names
+int currentblinks = 0; //undervolt current blinks
+int OverrideBlinkTime = 300; //blink interval for the override code
+//Normal on/off function array variables
+int LightOutput1 = 0;
+int LightOutput2 = 0;
+int LightOutput3 = 0;
+int LightOutputArray[] = {LightOutput1, LightOutput2, LightOutput3};
+//global states
+int statelights = 0;// = digitalRead(lights);
+int statehighbeams = 0; // = digitalRead(highbeams); //commented out since we're reading it over the serial line instead
+int stateignition = 0; // = digitalRead(ignitioninput);//key switch to run
+//Override function variables
 int WorkingPreviousOverrideState1 = 0;//will work as global  variable -- need not be a static
 int WorkingPreviousOverrideState2 = 0;
 int WorkingPreviousOverrideState3 = 0;
@@ -28,157 +49,366 @@ int WorkingOverrideCount1 = 0;
 int WorkingOverrideCount2 = 0;
 int WorkingOverrideCount3 = 0;
 int WorkingOverrideCount4 = 0;
-//define array for working switches
+// working number counters
+int WorkingNumberCounter1 = 1;
+int WorkingNumberCounter2 = 2;
+int WorkingNumberCounter3 = 3;
+int WorkingNumberCounter4 = 4; 
+//declare the various arrays needed for override globally
+int static WorkingCounterArray[] = {WorkingOverrideCount1, WorkingOverrideCount2, WorkingOverrideCount3, WorkingOverrideCount4};
+int static PreviousNameArray[] = {WorkingPreviousOverrideState1, WorkingPreviousOverrideState2, WorkingPreviousOverrideState3, WorkingPreviousOverrideState4};
+int static WorkingNumberCounterArray[] = {WorkingNumberCounter1, WorkingNumberCounter2, WorkingNumberCounter3, WorkingNumberCounter4};
+//declare variable needed for the protect record functionality
+long static previousMillis = 0;
+unsigned long currentMillis = millis(); //create timing variable for the flashing protect button in dashcam
 
-
-
-
-// the setup routine runs once when you press reset:
+// -----SETUP------
 void setup() {
-  // initialize the digital pin as an output.
-  pinMode(ledauto, OUTPUT);
-  pinMode(ledhigh, OUTPUT);
-  pinMode(buttonauto, INPUT);
-  pinMode(buttonhigh, INPUT);
+  //Set the pins to do the things
+  //Switch LEDs
+  pinMode(S1LEDlower, OUTPUT);
+  pinMode(S1LEDupper, OUTPUT);
+  pinMode(S2LEDlower, OUTPUT);
+  pinMode(S2LEDupper, OUTPUT);
+  pinMode(S3LEDlower, OUTPUT);
+  pinMode(S3LEDupper, OUTPUT);
+  //Switch inputs
+  pinMode(S1lower, INPUT);
+  pinMode(S1upper, INPUT);
+  pinMode(S2lower, INPUT);
+  pinMode(S2upper, INPUT);
+  pinMode(S3lower, INPUT);
+  pinMode(S3upper, INPUT);
+  //Environmental inputs
   pinMode(lights, INPUT);
   pinMode(highbeams, INPUT);
+  pinMode(voltagesense, INPUT);
+  pinMode(ignitioninput, INPUT);
+  //outputs to lights
   pinMode(lightbarout, OUTPUT);
   Serial.begin(9600);
 }
-
+// --------END SETUP---------
 // the loop routine runs over and over again forever:
 void loop() {
-  int stateignition = digitalRead(ignitioninput);
-  int stateauto = digitalRead(buttonauto);
-  int statehigh = digitalRead(buttonhigh); 
-  int statelights = digitalRead(lights);
-  int statehighbeams = digitalRead(highbeams);
-  int voltagesense = analogRead(A2);
-  int incomingByte;
+  //set the states of the envionrmental inputs and give them variables
+  //switch state variables
+  int S1statelower = digitalRead(S1lower);
+  int S1stateupper = digitalRead(S1upper);
+  int S2statelower = digitalRead(S2lower);
+  int S2stateupper = digitalRead(S2upper);
+  int S3statelower = digitalRead(S3lower);
+  int S3stateupper = digitalRead(S3upper);
+  //environmental variables
+  int statevoltagesense = digitalRead(voltagesense);//alternator sense
+  int ScaledVoltage; //voltage sensing
+  ScaledVoltage = voltagesense / .0176; //(remember to add the damn zero after the decimal)
+  //Which Light we're controlling (used in arrays)
+  int LightNumber1 = 1;
+  int LightNumber2 = 2;
+  int LightNumber3 = 3;
+  //resulting variables (for light bars)(and declare them as zero so that they don't do random things)
+  int lightbar1out = 0;
+  int lightbar2out = 0;
+  //Override function variables (and declare them as zero so that they don't do random things)
+  int Override1 = 0;
+  int Override2 = 0;
+  //The dashcam variables
+  int Dashcam1;
+  int DashCamOut;
+  int DashCamProtectOut;
+  //dashcam update clock on main logic refresh
+  currentMillis = millis();
+  //Setup the serial heartbeat variables
   int oldByte;
+  int incomingByte;
   int time;
-  int Override1;
-  int Override2;
-
-    // Voltage regulation checking
-
-  float voltage;
-  time = millis();
-  voltage = voltagesense / 51.17; //remember to add the damn zero after the decimal
-  /*if (incomingByte == oldByte) {
-    incomingByte = Serial.read();
-    Serial.println("serial good ");
-    oldByte = incomingByte;
-  *//*  if (OverrideState != PreviousOverrideState&&statelights == LOW) {
-        OverrideCount ++;
-        Serial.print("Button presses ");
-        Serial.println(OverrideCount);
-        PreviousOverrideState = OverrideState;
-  }
-  /* else {
-    Serial.println("serial no good");
-    incomingByte = Serial.read();
-    incomingByte = oldByte;
-  }
- *//* if (OverrideCount >= 2&&statehigh == HIGH&&statelights == LOW) {
-    analogWrite(ledhigh, 255);
-    Serial.println("Overriden and hot");
-  }
-  else if (statehigh == HIGH&&statelights == HIGH) {
-    OverrideCount = 1;
-    analogWrite(ledhigh, 255);
-    Serial.println("Car on now, overrides reset");
-  }
-  else {
-    analogWrite(ledhigh, 0);
-    Serial.println("cold power off"); */
-  Override1 = OverrideRoutine(PreviousOverrideState1, statelights, statehigh, ledhigh, 1);
-  Override2 = OverrideRoutine(PreviousOverrideState2, statelights, stateauto, ledauto, 2);
-  delay(100);
-}
-
-int OverrideRoutine(int WorkingOutput, int WorkingStateEngine, int WorkingStateButtonHigh, int WorkingLEDHigh, int WorkingSwitchNumber) { 
-
-  int static PreviousNameArray[] = {WorkingPreviousOverrideState1, WorkingPreviousOverrideState2, WorkingPreviousOverrideState3, WorkingPreviousOverrideState4};
-  int static WorkingCounterArray[] = {WorkingOverrideCount1, WorkingOverrideCount2, WorkingOverrideCount3, WorkingOverrideCount4};
-  if (WorkingStateButtonHigh != PreviousNameArray[WorkingSwitchNumber]&&WorkingStateEngine == LOW) { //these table calls seems to work
-    WorkingCounterArray[WorkingSwitchNumber] ++;
-        Serial.print("Button presses ");
-        Serial.println(WorkingCounterArray[WorkingSwitchNumber]);
-    	Serial.print("on switch ");
-    	Serial.println(WorkingSwitchNumber);
-        PreviousNameArray[WorkingSwitchNumber] = WorkingStateButtonHigh;
-  }
-    if (WorkingOverrideCount >= 3&&WorkingStateButtonHigh == HIGH&&WorkingStateEngine == LOW) {
-    analogWrite(WorkingLEDHigh, 255);
-    Serial.print("Overriden and hot on ");
-    Serial.println(PreviousNameArray[WorkingSwitchNumber]);
-  }
-  else if (WorkingStateButtonHigh == HIGH&&WorkingStateEngine == HIGH) {
-    WorkingCounterArray[WorkingSwitchNumber] = 1;
-    analogWrite(WorkingLEDHigh, 255);
-    Serial.println("Car on now, overrides reset");
-  }
-  else {
-    analogWrite(WorkingLEDHigh, 0);
-    Serial.println("cold power off");
-  }  
-}/*
-  if (voltage <= 11.5&&currentblinks <= undervoltblinks) {
-    analogWrite(ledauto, 255);
-    delay (undervoltinterval);
-    analogWrite(ledauto, 0);
-    delay (undervoltinterval);
-    currentblinks++;
-    Serial.println(currentblinks);
-  } 
-  else if (voltage <= 11.5&&currentblinks >= undervoltblinks) {
-    analogWrite(ledauto, 0);
+  time = millis();//used in transmitting heartbeat to receiver
+  // Call the functions (MAIN LOGIC BLOCK)
+  if (ScaledVoltage < 1150)  //check for low voltage before we get into the functions
+  {
     Serial.println("Low Batt");
   }
-  else
+  else 
   {
-  //check for illegal button press before we do anything
-  if (statehigh == HIGH&&stateauto == HIGH) {
+    //Serial.println("Good Batt");
+  }//finish battery testing
+  //Test to see if we have a good serial link
+  if (Serial.available() != 0) { 
+    //incomingByte = Serial.read();
+    //Serial.print("serial good ");
+    //Serial.println(time, DEC);
+    //read the incoming serial bits and parse them
+    oldByte = incomingByte;
+    String MarkerString = Serial.readStringUntil(',');
+    int SystemTimeString = Serial.parseInt();
+    statelights = Serial.parseInt();
+    statehighbeams = Serial.parseInt();
+    stateignition = Serial.parseInt();
+    // ----Main subroutine Logic----
+    if (stateignition == HIGH) { //If the car is on run the normal routine
+    //Call the main light controls for 1 and 2
+    lightbar1out = LightLogicFunction(S1statelower, S1stateupper, S1LEDlower, S1LEDupper, statelights, statehighbeams, stateignition, 0, lightbar1out);//call ofthe actual function
+    lightbar2out = LightLogicFunction(S2statelower, S2stateupper, S2LEDlower, S2LEDupper, statelights, statehighbeams, stateignition, 1, lightbar2out);//call ofthe actual function
+    //reset the counters to zero for the override tables
+    WorkingCounterArray[0] = 0;
+    WorkingCounterArray[1] = 0;
+    WorkingCounterArray[2] = 0;
+    WorkingCounterArray[3] = 0;
+    delay(10);
+    }
+    // call the light override function for 1
+    else { //if the car isn't on run the battery off logic
+    Override1 = OverrideRoutine(stateignition, S1statelower, S1LEDlower, lightbar1out, 0);
+    Override2 = OverrideRoutine(stateignition, S2statelower, S2LEDlower, lightbar2out, 1);
+    // call the dashcam logic
+    Dashcam1 = OnOffLogic(S3statelower, S3stateupper, S3LEDlower, S3LEDupper, statelights, 2, DashCamProtectOut);
+    delay(100);
+    }
+    // ----end main logic----
+    oldByte ++; //comment out for real deployment
+      }
+  else { //if we don't have a good link do this stuff
+    //Serial.println("serial no good");
+    incomingByte = Serial.read();
+    delay(200);
+  }
+  //Serial driver begin
+  	Serial.print("TFourR");
+  	Serial.print(",");
+  	Serial.print("T/");
+    Serial.print(time);
+    Serial.print(",");
+  	Serial.print(ScaledVoltage);
+  	Serial.print(",");
+    Serial.print(LightOutputArray[0]);
+    Serial.print(",");
+    Serial.print(LightOutputArray[1]);
+    Serial.print(",");
+    Serial.print(LightOutputArray[2]);
+    Serial.println();
+  //Serial driver end
+ }//end main code
+//Light Bar function block
+	// Defining all our input variables into the function
+//Writing directly the variables, rather than doing an analogWrite.
+//UPPER = AUTO and LOWER = HIGH BEAMS
+  int LightLogicFunction(int workinglower, int workingupper, int workingLEDlower, int workingLEDupper, int workingStateLights, int workingStateHighBeams, int workingIgnitionInput, int workingLightNumber, int workingoutput){
+    //define the array of the output names before we get too far
+    //start the main loop
+    if (workingupper == HIGH&&workinglower == HIGH) {
+    /*Serial.print("Light ");
+    Serial.print(WorkingNumberCounterArray[workingLightNumber]);
+    Serial.print(":");
     Serial.println("Illegal button press");
+    */
   }   
   //check to see if we're in auto then check to see about lights, if yes, then high beams
-  else if (stateauto == HIGH&&statelights == HIGH&&statehighbeams == HIGH) {
-    Serial.println("Auto High, please");
-    analogWrite(ledauto, 255);
-    analogWrite(ledhigh, 125);
-    analogWrite(lightbarout, 255);
+  else if (workingupper == HIGH&&workingStateLights == HIGH&&workingStateHighBeams == HIGH) {
+    /*Serial.print("Light ");
+    Serial.print(WorkingNumberCounterArray[workingLightNumber]);
+    Serial.print(":");
+    Serial.println("255");
+    */
+    analogWrite(workingLEDlower, 255);
+    analogWrite(workingLEDupper, 125);
+    LightOutputArray[workingLightNumber] = 255;
     }
-  else if (stateauto == HIGH&&statelights == HIGH&&statehighbeams == LOW) {
-    Serial.println("Auto medium beams, please");
-    analogWrite(ledauto, 255);
-    analogWrite(ledhigh, 125);
-    analogWrite(lightbarout, 125);
-   }
-  else if (stateauto == LOW&&statelights == HIGH&&statehigh == LOW) {
+    //Auto LEDs but with lights but no hight beams
+  else if (workingupper == HIGH&&workingStateLights == HIGH&&workingStateHighBeams == LOW) {
+    /*Serial.print("Light ");
+    Serial.print(workingLightNumber);
+    Serial.print(":");
+    Serial.println("128");
+    */
+    analogWrite(workingLEDupper, 255);
+    analogWrite(workingLEDlower, 125);
+    LightOutputArray[workingLightNumber] = 125;
+   }//no switch action but lights on, so glow the panel
+  else if (workingupper == LOW&&workinglower ==LOW&&workingStateLights == HIGH&&workingStateHighBeams == LOW) {
+    /*Serial.print("Light ");
+    Serial.print(workingLightNumber);
+    Serial.print(":");
     Serial.println("Lights on, light bars off, just light up the panel");
-    analogWrite(ledauto, 125);
-    analogWrite(ledhigh, 125);
-    analogWrite(lightbarout, 0);
+    */
+    analogWrite(workingLEDlower, 125);
+    analogWrite(workingLEDupper, 125);
+    LightOutputArray[workingLightNumber] = 0;
+  }//Auto LEDS, but no car lights
+  else if (workingupper == HIGH&&workingStateLights == LOW&&workingStateHighBeams == LOW) {
+    /*Serial.print("Light ");
+    Serial.print(workingLightNumber);
+    Serial.print(":");
+    Serial.println("0");
+    */
+    analogWrite(workingLEDlower, 0);
+    analogWrite(workingLEDupper, 255);
+    LightOutputArray[workingLightNumber] = 0;
+  }//all off, no glow
+  else if (workinglower == LOW&&workingStateLights == LOW&&workingStateHighBeams == LOW&&workingupper == LOW) {
+    /*Serial.print("Light ");
+    Serial.print(workingLightNumber);
+    Serial.print(":");
+    Serial.println("0");
+    */
+    analogWrite(workingLEDlower, 0);
+    analogWrite(workingLEDupper, 0);
+    LightOutputArray[workingLightNumber] = 0;
+  }//Hight beams and glowing panel
+  else if (workinglower == HIGH&&workingStateLights == HIGH) {
+    /*Serial.print("Light ");
+    Serial.print(workingLightNumber);
+    Serial.print(":");
+    Serial.println("255");
+    */
+    analogWrite(workingLEDlower, 255);
+    analogWrite(workingLEDupper, 125);
+    LightOutputArray[workingLightNumber] = 255;
+  }//High beams no glow on rest of panel
+  else if (workinglower == HIGH){
+    /*Serial.print("Light ");
+    Serial.print(workingLightNumber);
+    Serial.print(":");
+    Serial.println("255");
+    */
+    analogWrite(workingLEDlower, 255);
+    analogWrite(workingLEDupper, 0);
+    LightOutputArray[workingLightNumber] = 255;
+  }//all off panel glowing
+  else if (workinglower == LOW&&workingupper == LOW&&workingStateLights == HIGH&&workingStateHighBeams == HIGH) {
+    /*Serial.print("Light ");
+    Serial.print(workingLightNumber);
+    Serial.print(":");
+    Serial.println("0");
+    */
+    analogWrite(workingLEDlower, 125);
+    analogWrite(workingLEDupper, 125);
+    LightOutputArray[workingLightNumber] = 0;
+  }
+  }//end Light selection function
+//Begin the override switch function
+int OverrideRoutine(int WorkingStateEngine, int WorkingStateButtonHigh, int WorkingLEDlower, int WorkingOutput, int WorkingSwitchNumber) {
+  //tables are established in global variables
+  //check for state change from last time
+  if (WorkingStateButtonHigh != PreviousNameArray[WorkingSwitchNumber]&&WorkingStateEngine == LOW) {
+        WorkingCounterArray[WorkingSwitchNumber] ++;
+        /*Serial.print(WorkingNumberCounterArray[WorkingSwitchNumber]);
+        Serial.print("presses on switch ");//comment out during deployment
+    	Serial.println(WorkingNumberCounterArray[WorkingSwitchNumber]);//same
+        */
+        PreviousNameArray[WorkingSwitchNumber] = WorkingStateButtonHigh;//same
+  }
+    if (WorkingCounterArray[WorkingSwitchNumber] >= 3&&WorkingStateButtonHigh == HIGH&&WorkingStateEngine == LOW) {
+    analogWrite(WorkingLEDlower, 255);
+    LightOutputArray[WorkingSwitchNumber] = 255;
+    /*Serial.print("Light ");
+    Serial.print(WorkingNumberCounterArray[WorkingSwitchNumber]);
+    Serial.println(":255");
+    */
+  }
+  else if (WorkingStateButtonHigh == HIGH&&WorkingStateEngine == HIGH) {
+    WorkingCounterArray[WorkingSwitchNumber] = 0;
+    analogWrite(WorkingLEDlower, 255);
+    LightOutputArray[WorkingSwitchNumber] = 255;
+    /*Serial.println("Car on now, overrides reset");
+    Serial.print("Light ");
+    Serial.print(WorkingNumberCounterArray[WorkingSwitchNumber]);
+    Serial.println(":255");
+    */
+  }
+  else {
+    analogWrite(WorkingLEDlower, 0);
+    LightOutputArray[WorkingSwitchNumber] = 0;//this is what's causing the working output  to go bananas
+    /*Serial.print("Light ");
+    Serial.print(WorkingNumberCounterArray[WorkingSwitchNumber]);
+    Serial.println(":0");
+    */
   }  
-  else if (stateauto == HIGH&&statelights == LOW&&statehighbeams == LOW) {
-    Serial.println("Auto, but no lights, thanks");
-    analogWrite(ledauto, 0);
-    analogWrite(ledhigh, 0);
-    analogWrite(lightbarout, 0);
-  }
-  else if (stateauto == LOW&&statelights == LOW&&statehighbeams == LOW&&statehigh == LOW) {
-    Serial.println("All off");
-    analogWrite(ledauto, 0);
-    analogWrite(ledhigh, 0);
-    analogWrite(lightbarout, 0);
-  }
-  else if (statehigh == HIGH){
-    Serial.println("Manual high LEDS");
-    analogWrite(ledauto, 0);
-    analogWrite(ledhigh, 255);
-    analogWrite(lightbarout, 255);
-  }
-  }
 }
-*/
+//Start the logic for simple auto/off states like the dashcam. Updated for the drivers to put together the ascii bit later on. Removed digitalWrite commands
+//For consistency we're trying to keep it as similar to the light logica s we can
+//UPPER = AUTO and off is off and LOWER = PROTECT
+//protect mode will pulse the protect output, connected to the MODE button on the mobious
+int OnOffLogic(int workinglower, int workingupper, int workingLEDlower, int workingLEDupper, int workingStateLights, int workingLightNumber, int workingProtect){
+    if (workingupper == HIGH&&workinglower == HIGH) {
+    /*Serial.print("Circuit ");
+    Serial.print(workingLightNumber);
+    Serial.print(":");
+    Serial.println("Illegal button press");
+    */
+  }   
+  //If we're in auto and the lights are on, glow the dash
+  else if (workingupper == HIGH&&workingStateLights == HIGH) {
+    /*Serial.print("Circuit ");
+    Serial.print(workingLightNumber);
+    Serial.print(":");
+    Serial.println("HIGH");
+    */
+    analogWrite(workingLEDupper, 255);
+    analogWrite(workingLEDlower, 125);
+    LightOutputArray[workingLightNumber] = 255;
+   }//if we're in OFF and the dash still needs glowing
+  else if (workingupper == LOW&&workinglower ==LOW&&workingStateLights == HIGH) {
+    /*Serial.print("Circuit ");
+    Serial.print(workingLightNumber);
+    Serial.print(":");
+    Serial.println("Lights on, light bars off, just light up the panel");
+    */
+    analogWrite(workingLEDlower, 125);
+    analogWrite(workingLEDupper, 125);
+    LightOutputArray[workingLightNumber] = 0;
+  }//in auto with no car lighting on
+  else if (workingupper == HIGH&&workingStateLights == LOW) {
+    /*Serial.print("Circuit ");
+    Serial.print(workingLightNumber);
+    Serial.print(":");
+    Serial.println("HIGH");
+    */
+    analogWrite(workingLEDlower, 0);
+    analogWrite(workingLEDupper, 255);
+    LightOutputArray[workingLightNumber] = 255;
+  }//dashcam off, and panel not glowing
+  else if (workinglower == LOW&&workingStateLights == LOW&&workingupper == LOW) {
+    /*Serial.print("Circuit ");
+    Serial.print(workingLightNumber);
+    Serial.print(":");
+    Serial.println("OFF");
+    */
+    analogWrite(workingLEDlower, 0);
+    analogWrite(workingLEDupper, 0);
+    LightOutputArray[workingLightNumber] = 255;
+  }//protect mode on and panel glowing
+  else if (workinglower == HIGH&&workingStateLights == HIGH) {
+    /*Serial.print("Circuit ");
+    Serial.print(workingLightNumber);
+    Serial.print(":");
+    Serial.println("HIGH");
+    */
+    analogWrite(workingLEDlower, 255);
+    analogWrite(workingLEDupper, 125);
+    LightOutputArray[workingLightNumber] = 255;
+    if (currentMillis - previousMillis >= OverrideBlinkTime) {
+      previousMillis = currentMillis;
+    digitalWrite(workingProtect, HIGH);
+    }
+    else
+    digitalWrite(workingProtect, LOW);
+  }//protect mdoe and panel not glowing
+  else if (workinglower == HIGH){
+    /*Serial.print("Circuit ");
+    Serial.print(workingLightNumber);
+    Serial.print(":");
+    Serial.println("HIGH");
+    */
+    analogWrite(workingLEDlower, 255);
+    analogWrite(workingLEDupper, 0);
+    LightOutputArray[workingLightNumber] = 255;
+    if (currentMillis - previousMillis >= OverrideBlinkTime) {
+      previousMillis = currentMillis;
+    digitalWrite(workingProtect, HIGH);
+    }
+    else
+    digitalWrite(workingProtect, LOW);
+  }
+  }//end Light selection function
+
