@@ -83,6 +83,9 @@ int static WorkingCounterArray[] = {WorkingOverrideCount1, WorkingOverrideCount2
 int static PreviousNameArray[] = {WorkingPreviousOverrideState1, WorkingPreviousOverrideState2, WorkingPreviousOverrideState3, WorkingPreviousOverrideState4, WorkingPreviousOverrideState5, WorkingPreviousOverrideState6};
 int static WorkingNumberCounterArray[] = {WorkingNumberCounter1, WorkingNumberCounter2, WorkingNumberCounter3, WorkingNumberCounter4, WorkingNumberCounter5, WorkingNumberCounter6};
 
+//declare variable needed for the protect record functionality
+long static previousMillis = 0;
+unsigned long currentMillis = millis(); //create timing variable for the flashing protect button in dashcam
 
 //output vars
 int ledpin = 13;
@@ -96,6 +99,13 @@ int Override2 = 0;
 int Dashcam1;
 int DashCamOut;
 int DashCamProtectOut;
+
+//Normal on/off function array variables
+int LightOutput1 = 0;
+int LightOutput2 = 0;
+int LightOutput3 = 0;
+int LightOutputArray[] = {LightOutput1, LightOutput2, LightOutput3};
+
 
 void setup() {
   // put your setup code here, to run once:
