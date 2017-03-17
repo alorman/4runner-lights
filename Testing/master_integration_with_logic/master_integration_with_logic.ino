@@ -8,7 +8,7 @@ int voltage = 0;
 int lightsstate = 0;
 int ignitionstate = 0;
 int highbeamsstate = 0;
-int ch1state = 1;
+int ch1state = 0;
 int ch2state = 0;
 int ch3state = 0;
 int ch4state = 0;
@@ -20,32 +20,32 @@ String mastername = "Lower";
 //end vars needed for serial driver
 
 //LED Outputs
-int S1LEDlower = 20;
-int S1LEDupper = 21;
-int S2LEDlower = A3;
-int S2LEDupper = A4;
-int S3LEDlower = A6;
-int S3LEDupper = 11;
-int S4LEDlower = 3;
-int S4LEDupper = 4;
-int S5LEDlower = 5;
-int S5LEDupper = 6;
-int S6LEDlower = 32;
-int S7LEDupper = 25;
+int S1LEDlower = 10;
+int S1LEDupper = 9;
+int S2LEDlower = 51;//testing from here out not used
+int S2LEDupper = 52;
+int S3LEDlower = 53;
+int S3LEDupper = 54;
+int S4LEDlower = 55;
+int S4LEDupper = 56;
+int S5LEDlower = 57;
+int S5LEDupper = 58;
+int S6LEDlower = 59;
+int S7LEDupper = 60;//not used above
 
 // Switch inputs
 int S1lower = 2;
-int S1upper = 7;
-int S2lower = 8;
-int S2upper = 19;
-int S3lower = 18;
-int S3upper = 17;
-int S4lower = 16;
-int S4upper = 15;
-int S5lower = 14;
-int S5upper = 13;
-int S6lower = 12;
-int S6upper = 11;
+int S1upper = 3;
+int S2lower = 61;//testing not used below
+int S2upper = 62;
+int S3lower = 63;
+int S3upper = 64;
+int S4lower = 65;
+int S4upper = 66;
+int S5lower = 67;
+int S5upper = 68;
+int S6lower = 69;
+int S6upper = 70;//testing not used above
 
 //various blink intervals
 unsigned long previousmillis = 0; // undevolt variable
@@ -75,8 +75,8 @@ int WorkingNumberCounter1 = 1;
 int WorkingNumberCounter2 = 2;
 int WorkingNumberCounter3 = 3;
 int WorkingNumberCounter4 = 4; 
-int WorkingNumberCounter5 = 4; 
-int WorkingNumberCounter6 = 4; 
+int WorkingNumberCounter5 = 5; 
+int WorkingNumberCounter6 = 6; 
 
 //declare the various arrays needed for override globally
 int static WorkingCounterArray[] = {WorkingOverrideCount1, WorkingOverrideCount2, WorkingOverrideCount3, WorkingOverrideCount4, WorkingOverrideCount5, WorkingOverrideCount6};

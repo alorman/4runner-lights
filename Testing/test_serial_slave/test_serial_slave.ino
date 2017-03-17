@@ -1,10 +1,10 @@
 // Testing serial1 writing between Teensy boards
 //Slave
 //serial vars
-int voltage = 1325;
-int lightsstate = 1;
+int voltage = 0;
+int lightsstate = 0;
 int ignitionstate = 0;
-int highbeamsstate = 1;
+int highbeamsstate = 0;
 int ch1state = 0;
 int ch2state = 0;
 int ch3state = 0;
@@ -17,23 +17,23 @@ String mastername = "Upper";
 //end vars needed for serial
 
 //output vars
-int ch1pin = 13; //most likely would be 6 
-int ch2pin = 23;
-int ch3pin = 22;
-int ch4pin = 21;
-int ch5pin = 20;
-int ch6pin = 5;
+int ch1pin = 10; //most likely would be 6 
+int ch2pin = 51; //testing pins not used
+int ch3pin = 52;
+int ch4pin = 53;
+int ch5pin = 54;
+int ch6pin = 55;
 
 //fan pin
 
-int fanpin = 11;
+int fanpin = 56; //not used in testing
 int fanstate = 0;
 
 //input sensing vars
 int ignitionpin = 17;
 int lightspin = 16;
 int highbeamspin = 15;
-int voltagepin = 14;
+int voltagepin = A0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -66,7 +66,7 @@ void loop() {
 lightsstate = digitalRead(lightspin);
 ignitionstate = digitalRead(ignitionpin);
 highbeamsstate = digitalRead(highbeamspin);
-voltage = analogRead(voltagepin) * 10; //voltage multiplier here
+voltage = analogRead(voltagepin) * 1.75; //voltage multiplier here
 
 //write out the desired outputs
 analogWrite(ch1pin, ch1state); //and write it
@@ -104,9 +104,9 @@ void serialread() { //serial read function. Use this area to adjust what gets li
   String tempch6 = Serial1.readStringUntil('/');
   //int tempvoltage2 = tempvoltage.toInt(); //We're sending this not receving it
   systemtime = tempsystemtime.toInt();
-  //ignitionstate = tempignition.toInt();
-  //lightsstate = templights.toInt();
-  //highbeamsstate = temphighbeams.toInt();
+  //ignitionstate = tempignition.toInt();  //were sending these
+  //lightsstate = templights.toInt();       //sending these
+  //highbeamsstate = temphighbeams.toInt();  //sending these
   ch1state = tempch1.toInt();
   ch2state = tempch2.toInt();
   ch3state = tempch3.toInt();
