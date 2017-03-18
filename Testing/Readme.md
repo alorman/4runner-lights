@@ -1,9 +1,9 @@
 TODO
 
 * Master:
- ..* Figure out why we have two sets of pin definitions
-..* invert high low logic
-⋅⋅* Unordered sub-list. 
+* Figure out why we have two sets of pin definitions
+invert high low logic
+Unordered sub-list. 
 
 * Slave:
 -Add debug flag in head
