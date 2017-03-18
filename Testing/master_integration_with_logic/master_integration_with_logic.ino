@@ -34,6 +34,7 @@ int S6LEDLOW2er = 59;
 int S7LEDupper = 60;//not used above
 
 // Switch inputs
+<<<<<<< HEAD
 int S1LOW2erPin = 2;
 int S1upperPin = 3;
 int S2LOW2erPin = 61;//testing not used beLOW2
@@ -55,6 +56,21 @@ int S2stateupper = 0;
 int S3stateLOW2er = 0;
 int S3stateupper = 0;
   
+=======
+int S1lower = 2;
+int S1upper = 3;
+int S2lower = 61;//testing not used below
+int S2upper = 62;
+int S3lower = 63;
+int S3upper = 64;
+int S4lower = 65;
+int S4upper = 66;
+int S5lower = 67;
+int S5upper = 68;
+int S6lower = 69;
+int S6upper = 70;//testing not used above
+
+>>>>>>> parent of f667a91... Change led to Pins explicitly
 //various blink intervals
 unsigned long previousmillis = 0; // undevolt variable
 const long undervoltinterval = 1000; // undervolt timing
@@ -127,12 +143,21 @@ void setup() {
   pinMode(S3LEDLOW2er, OUTPUT);
   pinMode(S3LEDupper, OUTPUT);
   //Switch inputs
+<<<<<<< HEAD
   pinMode(S1LOW2erPin, INPUT);
   pinMode(S1upperPin, INPUT);
   pinMode(S2LOW2erPin, INPUT);
   pinMode(S2upperPin, INPUT);
   pinMode(S3LOW2erPin, INPUT);
   pinMode(S3upperPin, INPUT);
+=======
+  pinMode(S1lower, INPUT);
+  pinMode(S1upper, INPUT);
+  pinMode(S2lower, INPUT);
+  pinMode(S2upper, INPUT);
+  pinMode(S3lower, INPUT);
+  pinMode(S3upper, INPUT);
+>>>>>>> parent of f667a91... Change led to Pins explicitly
   //Environmental inputs
   //pinMode(lights, INPUT);
   //pinMode(LOWbeams, INPUT);
@@ -175,20 +200,34 @@ int lightbar2out = 0;
 systemtime ++;
 
   //switch state variables
+<<<<<<< HEAD
  S1stateLOW2er = digitalRead(S1LOW2erPin);
  S1stateupper = digitalRead(S1upperPin);
  S2stateLOW2er = digitalRead(S2LOW2erPin);
  S2stateupper = digitalRead(S2upperPin);
  S3stateLOW2er = digitalRead(S3LOW2erPin);
  S3stateupper = digitalRead(S3upperPin);
+=======
+  int S1statelower = digitalRead(S1lower);
+  int S1stateupper = digitalRead(S1upper);
+  int S2statelower = digitalRead(S2lower);
+  int S2stateupper = digitalRead(S2upper);
+  int S3statelower = digitalRead(S3lower);
+  int S3stateupper = digitalRead(S3upper);
+>>>>>>> parent of f667a91... Change led to Pins explicitly
   
 //read the actual sensors in here
 digitalWrite(ledpin, ch1state); //and write it
 
 if (ignitionstate == 1) { //if the car is on, run the normal lighting procedure
     //Call the main light controls for 1 and 2
+<<<<<<< HEAD
     lightbar1out = LightLogicFunction(S1stateLOW2er, S1stateupper, S1LEDLOW2er, S1LEDupper, lightsstate, LOWbeamsstate, ignitionstate, 0, ch1state);//call ofthe actual function
     lightbar2out = LightLogicFunction(S2stateLOW2er, S2stateupper, S2LEDLOW2er, S2LEDupper, lightsstate, LOWbeamsstate, ignitionstate, 1, lightbar2out);//call ofthe actual function
+=======
+    lightbar1out = LightLogicFunction(S1statelower, S1stateupper, S1LEDlower, S1LEDupper, lightsstate, highbeamsstate, ignitionstate, 0, lightbar1out);//call ofthe actual function
+    lightbar2out = LightLogicFunction(S2statelower, S2stateupper, S2LEDlower, S2LEDupper, lightsstate, highbeamsstate, ignitionstate, 1, lightbar2out);//call ofthe actual function
+>>>>>>> parent of f667a91... Change led to Pins explicitly
     //reset the counters to zero for the override tables
     WorkingCounterArray[0] = 0;
     WorkingCounterArray[1] = 0;
@@ -429,7 +468,11 @@ void serialread() { //serial read function. Use this area to adjust what gets li
   //ch6state = tempch6.toInt();
 }
 void serialdiagnostic() { //diagnostic readout for USB serial port
+<<<<<<< HEAD
   Serial.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/V" + voltage + "/I" + ignitionstate + "/L" + lightsstate + "/H" + LOWbeamsstate + "/CH1" + S1stateLOW2er + "/CH2" + S1stateupper + "/CH3" + ch3state + "/CH4" + ch4state + "/CH5" + ch5state + "/CH6" + ch6state + "/");
+=======
+  Serial.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/V" + voltage + "/I" + ignitionstate + "/L" + lightsstate + "/H" + highbeamsstate + "/CH1" + ch1state + "/CH2" + ch2state + "/CH3" + ch3state + "/CH4" + ch4state + "/CH5" + ch5state + "/CH6" + ch6state + "/");
+>>>>>>> parent of f667a91... Change led to Pins explicitly
   }
 
 void serialsend()  { //send the outgoing serial data
