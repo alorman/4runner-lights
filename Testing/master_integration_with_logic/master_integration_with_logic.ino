@@ -34,19 +34,27 @@ int S6LEDlower = 59;
 int S7LEDupper = 60;//not used above
 
 // Switch inputs
-int S1lower = 2;
-int S1upper = 3;
-int S2lower = 61;//testing not used below
-int S2upper = 62;
-int S3lower = 63;
-int S3upper = 64;
-int S4lower = 65;
-int S4upper = 66;
-int S5lower = 67;
-int S5upper = 68;
-int S6lower = 69;
-int S6upper = 70;//testing not used above
+int S1lowerPin = 2;
+int S1upperPin = 3;
+int S2lowerPin = 61;//testing not used below
+int S2upperPin = 62;
+int S3lowerPin = 63;
+int S3upperPin = 64;
+int S4lowerPin = 65;
+int S4upperPin = 66;
+int S5lowerPin = 67;
+int S5upperPin = 68;
+int S6lowerPin = 69;
+int S6upperPin = 70;//testing not used above
 
+//State holders for switches
+int S1statelower = 0;
+int S1stateupper = 0;
+int S2statelower = 0;
+int S2stateupper = 0;
+int S3statelower = 0;
+int S3stateupper = 0;
+  
 //various blink intervals
 unsigned long previousmillis = 0; // undevolt variable
 const long undervoltinterval = 1000; // undervolt timing
@@ -119,12 +127,12 @@ void setup() {
   pinMode(S3LEDlower, OUTPUT);
   pinMode(S3LEDupper, OUTPUT);
   //Switch inputs
-  pinMode(S1lower, INPUT);
-  pinMode(S1upper, INPUT);
-  pinMode(S2lower, INPUT);
-  pinMode(S2upper, INPUT);
-  pinMode(S3lower, INPUT);
-  pinMode(S3upper, INPUT);
+  pinMode(S1lowerPin, INPUT);
+  pinMode(S1upperPin, INPUT);
+  pinMode(S2lowerPin, INPUT);
+  pinMode(S2upperPin, INPUT);
+  pinMode(S3lowerPin, INPUT);
+  pinMode(S3upperPin, INPUT);
   //Environmental inputs
   //pinMode(lights, INPUT);
   //pinMode(highbeams, INPUT);
@@ -167,19 +175,19 @@ int lightbar2out = 0;
 systemtime ++;
 
   //switch state variables
-  int S1statelower = digitalRead(S1lower);
-  int S1stateupper = digitalRead(S1upper);
-  int S2statelower = digitalRead(S2lower);
-  int S2stateupper = digitalRead(S2upper);
-  int S3statelower = digitalRead(S3lower);
-  int S3stateupper = digitalRead(S3upper);
+ S1statelower = digitalRead(S1lowerPin);
+ S1stateupper = digitalRead(S1upperPin);
+ S2statelower = digitalRead(S2lowerPin);
+ S2stateupper = digitalRead(S2upperPin);
+ S3statelower = digitalRead(S3lowerPin);
+ S3stateupper = digitalRead(S3upperPin);
   
 //read the actual sensors in here
 digitalWrite(ledpin, ch1state); //and write it
 
 if (ignitionstate == 1) { //if the car is on, run the normal lighting procedure
     //Call the main light controls for 1 and 2
-    lightbar1out = LightLogicFunction(S1statelower, S1stateupper, S1LEDlower, S1LEDupper, lightsstate, highbeamsstate, ignitionstate, 0, lightbar1out);//call ofthe actual function
+    lightbar1out = LightLogicFunction(S1statelower, S1stateupper, S1LEDlower, S1LEDupper, lightsstate, highbeamsstate, ignitionstate, 0, ch1state);//call ofthe actual function
     lightbar2out = LightLogicFunction(S2statelower, S2stateupper, S2LEDlower, S2LEDupper, lightsstate, highbeamsstate, ignitionstate, 1, lightbar2out);//call ofthe actual function
     //reset the counters to zero for the override tables
     WorkingCounterArray[0] = 0;
@@ -421,7 +429,7 @@ void serialread() { //serial read function. Use this area to adjust what gets li
   //ch6state = tempch6.toInt();
 }
 void serialdiagnostic() { //diagnostic readout for USB serial port
-  Serial.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/V" + voltage + "/I" + ignitionstate + "/L" + lightsstate + "/H" + highbeamsstate + "/CH1" + ch1state + "/CH2" + ch2state + "/CH3" + ch3state + "/CH4" + ch4state + "/CH5" + ch5state + "/CH6" + ch6state + "/");
+  Serial.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/V" + voltage + "/I" + ignitionstate + "/L" + lightsstate + "/H" + highbeamsstate + "/CH1" + S1statelower + "/CH2" + S1stateupper + "/CH3" + ch3state + "/CH4" + ch4state + "/CH5" + ch5state + "/CH6" + ch6state + "/");
   }
 
 void serialsend()  { //send the outgoing serial data

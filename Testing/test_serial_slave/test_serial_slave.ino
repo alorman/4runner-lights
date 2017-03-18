@@ -66,7 +66,7 @@ void loop() {
 lightsstate = digitalRead(lightspin);
 ignitionstate = digitalRead(ignitionpin);
 highbeamsstate = digitalRead(highbeamspin);
-voltage = analogRead(voltagepin) * 1.75; //voltage multiplier here
+voltage = analogRead(voltagepin) * 1.785; //voltage multiplier here
 
 //write out the desired outputs
 analogWrite(ch1pin, ch1state); //and write it
