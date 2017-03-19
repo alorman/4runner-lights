@@ -183,14 +183,14 @@ systemtime ++;
  S2stateupper = digitalRead(S2upperPin);
  S3statelower = digitalRead(S3lowerPin);
  S3stateupper = digitalRead(S3upperPin);
-
+ Serial.println((String)"S1 lower" + S1statelower);
+ Serial.println((String)"S1 upper" + S1stateupper);
   
 //read the actual sensors in here
 digitalWrite(ledpin, ch1state); //and write it
 
 if (ignitionstate == HIGH) { //if the car is on, run the normal lighting procedure
     //Call the main light controls for 1 and 2
-    Serial.println("ignition high");
     lightbar1out = LightLogicFunction(S1statelower, S1stateupper, S1LEDlower, S1LEDupper, lightsstate, highbeamsstate, ignitionstate, 0, ch1state);//call ofthe actual function
     //lightbar2out = LightLogicFunction(S2statelower, S2stateupper, S2LEDlower, S2LEDupper, lightsstate, highbeamsstate, ignitionstate, 1, lightbar2out);//call ofthe actual function
 
@@ -200,6 +200,9 @@ if (ignitionstate == HIGH) { //if the car is on, run the normal lighting procedu
     WorkingCounterArray[2] = 0;
     WorkingCounterArray[3] = 0;
     delay(10);
+    }
+    else if (debug == 1) {
+      Serial.println("debug 0.75");
     }
 //else if (ignitionstate == LOW) { //While the car is off run the following 
     //Override1 = OverrideRoutine(ignitionstate, S1statelower, S1LEDlower, lightbar1out, 0);
@@ -227,6 +230,7 @@ serialsend(); //send the serial data
     if (workingupper == LOW&&workinglower == LOW) {
       if (debug == 1) {
         Serial.println((String)"Breakpoint 1/" + workingLightNumber);
+        //  Serial.println(workinglower);
       }
   }   
   //check to see if we're in auto then check to see about lights, if yes, then high beams
@@ -290,6 +294,7 @@ serialsend(); //send the serial data
   else if (workinglower == HIGH&&workingupper == HIGH&&workingStateLights == LOW&&workingStateHighBeams == LOW) {
       if (debug == 1) {
       Serial.println((String)"Breakpoint 9/" + workingLightNumber);
+      Serial.println(workingupper);
       }
     analogWrite(workingLEDlower, midlightlevel);
     analogWrite(workingLEDupper, midlightlevel);
