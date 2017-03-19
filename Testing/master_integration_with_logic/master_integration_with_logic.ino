@@ -57,19 +57,6 @@ int S2statelower = 0;
 int S2stateupper = 0;
 int S3statelower = 0;
 int S3stateupper = 0;
-  
-int S1lower = 2;
-int S1upper = 3;
-int S2lower = 61;//testing not used below
-int S2upper = 62;
-int S3lower = 63;
-int S3upper = 64;
-int S4lower = 65;
-int S4upper = 66;
-int S5lower = 67;
-int S5upper = 68;
-int S6lower = 69;
-int S6upper = 70;//testing not used above
 
 
 //various blink intervals
@@ -151,12 +138,6 @@ void setup() {
   pinMode(S3lowerPin, INPUT);
   pinMode(S3upperPin, INPUT);
   
-  pinMode(S1lower, INPUT);
-  pinMode(S1upper, INPUT);
-  pinMode(S2lower, INPUT);
-  pinMode(S2upper, INPUT);
-  pinMode(S3lower, INPUT);
-  pinMode(S3upper, INPUT);
   //Environmental inputs
   //pinMode(lights, INPUT);
   //pinMode(highbeams, INPUT);
@@ -456,7 +437,7 @@ void serialread() { //serial read function. Use this area to adjust what gets li
   //ch6state = tempch6.toInt();
 }
 void serialdiagnostic() { //diagnostic readout for USB serial port
-  Serial.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/V" + voltage + "/I" + ignitionstate + "/L" + lightsstate + "/H" + highbeamsstate + "/CH1" + S1statelower + "/CH2" + S1stateupper + "/CH3" + ch3state + "/CH4" + ch4state + "/CH5" + ch5state + "/CH6" + ch6state + "/");
+  Serial.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/V" + voltage + "/I" + ignitionstate + "/L" + lightsstate + "/H" + highbeamsstate + "/CH1" + lightbar1out + "/CH2" + S1stateupper + "/CH3" + ch3state + "/CH4" + ch4state + "/CH5" + ch5state + "/CH6" + ch6state + "/");
   }
 
 void serialsend()  { //send the outgoing serial data
