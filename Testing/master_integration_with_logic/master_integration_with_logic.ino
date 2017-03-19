@@ -4,20 +4,17 @@
 int debug = 1; //change to 1 to debug over serial
 
 //Set the mid level light in resulting things
-int midlightlevel = 125;
-int midLEDoutlevel = 125;
+int midlightlevel = 50;
+int midLEDoutlevel = 75;
+
+//Override options
+int OverrideNumber = 5; //should always be an odd number
 
 //serial vars
 int voltage = 0;
 int lightsstate = 0;
 int ignitionstate = 0;
 int highbeamsstate = 0;
-int ch1state = 0;
-int ch2state = 0;
-int ch3state = 0;
-int ch4state = 0;
-int ch5state = 0;
-int ch6state = 0;
 int systemtime;
 String unitname = "Upper";
 String mastername = "Lower";
@@ -189,11 +186,11 @@ systemtime ++;
  S3stateupper = digitalRead(S3upperPin);
   
 //read the actual sensors in here
-digitalWrite(ledpin, ch1state); //and write it
+
 
 if (ignitionstate == HIGH) { //if the car is on, run the normal lighting procedure
     //Call the main light controls for 1 and 2
-    lightbar1out = LightLogicFunction(S1statelower, S1stateupper, S1LEDlower, S1LEDupper, lightsstate, highbeamsstate, ignitionstate, 0, ch1state);//call ofthe actual function
+    lightbar1out = LightLogicFunction(S1statelower, S1stateupper, S1LEDlower, S1LEDupper, lightsstate, highbeamsstate, ignitionstate, 0, lightbar1out);//call ofthe actual function
     //lightbar2out = LightLogicFunction(S2statelower, S2stateupper, S2LEDlower, S2LEDupper, lightsstate, highbeamsstate, ignitionstate, 1, lightbar2out);//call ofthe actual function
 
     //reset the counters to zero for the override tables
@@ -201,15 +198,26 @@ if (ignitionstate == HIGH) { //if the car is on, run the normal lighting procedu
     WorkingCounterArray[1] = 0;
     WorkingCounterArray[2] = 0;
     WorkingCounterArray[3] = 0;
+    PreviousNameArray[0] = 0;
+    PreviousNameArray[1] = 0;
+    PreviousNameArray[2] = 0;
+    PreviousNameArray[3] = 0;
+    
     delay(10);
     }
-    else if (debug == 1) {
+    if (debug == 1) {
       Serial.println("debug 0.75");
     }
-else if (ignitionstate == LOW) { //While the car is off run the following 
-    //Override1 = OverrideRoutine(ignitionstate, S1statelower, S1LEDlower, lightbar1out, 0);
+if (ignitionstate == LOW) { //While the car is off run the following 
+    //LightOutputArray[0] = 0;
+    //LightOutputArray[1] = 0;
+    Override1 = OverrideRoutine(ignitionstate, S1statelower, S1LEDlower, LightOutputArray[0], 0);
    // Override2 = OverrideRoutine(ignitionstate, S2statelower, S2LEDlower, lightbar2out, 1);
     //Dashcam1 = DashCamLogic(S3statelower, S3stateupper, S3LEDlower, S3LEDupper, lightsstate, 2, DashCamProtectOut);
+    if(debug == 1){
+      Serial.println("debug 0.8");
+    }
+    delay(10);
 }
 
 if(Serial1.available() > 0){ //if the port has data on the buffer then read it then send it out the diagnostic
@@ -240,20 +248,20 @@ serialsend(); //send the serial data
       if (debug == 1) {
       Serial.println((String)"Breakpoint 2/" + workingLightNumber);
       }
-    analogWrite(workingLEDlower, 255);
-    analogWrite(workingLEDupper, midlightlevel);
-    LightOutputArray[workingLightNumber] = 255;
+    analogWrite(workingLEDupper, 255);
+    analogWrite(workingLEDlower, midlightlevel);
+    LightOutputArray[workingLightNumber] = midLEDoutlevel;
     }
     //Auto LEDs but with lights but no hight beams
-  else if (workingupper == LOW&&workingStateLights == LOW&&workingStateHighBeams == HIGH) {
+  else if (workingupper == LOW&&workingStateLights == HIGH&&workingStateHighBeams == HIGH) {
       if (debug == 1) {
       Serial.println((String)"Breakpoint 3/" + workingLightNumber);
       }
     analogWrite(workingLEDupper, 255);
     analogWrite(workingLEDlower, midlightlevel);
-    LightOutputArray[workingLightNumber] = midLEDoutlevel;
+    LightOutputArray[workingLightNumber] = 255;
    }//no switch action but lights on, so glow the panel
-  else if (workingupper == HIGH&&workinglower ==HIGH&&workingStateLights == LOW&&workingStateHighBeams == HIGH) {
+  else if (workingupper == HIGH&&workinglower ==HIGH&&workingStateLights == HIGH&&workingStateHighBeams == LOW) {
       if (debug == 1) {
       Serial.println((String)"Breakpoint 4/" + workingLightNumber);
       }
@@ -261,7 +269,7 @@ serialsend(); //send the serial data
     analogWrite(workingLEDupper, midlightlevel);
     LightOutputArray[workingLightNumber] = 0;
   }//Auto LEDS, but no car lights
-  else if (workingupper == LOW&&workingStateLights == HIGH&&workingStateHighBeams == HIGH) {
+  else if (workingupper == LOW&&workingStateLights == LOW&&workingStateHighBeams == LOW) {
       if (debug == 1) {
       Serial.println((String)"Breakpoint 5/" + workingLightNumber);
       }
@@ -269,12 +277,12 @@ serialsend(); //send the serial data
     analogWrite(workingLEDupper, 255);
     LightOutputArray[workingLightNumber] = 0;
   }//all off, no glow
-  else if (workinglower == HIGH&&workingStateLights == HIGH&&workingStateHighBeams == HIGH&&workingupper == HIGH) {
+  else if (workinglower == HIGH&&workingupper == HIGH&&workingStateLights == HIGH&&workingStateHighBeams == HIGH) {
       if (debug == 1) {
       Serial.println((String)"Breakpoint 6/" + workingLightNumber);
       }
-    analogWrite(workingLEDlower, 0);
-    analogWrite(workingLEDupper, 0);
+    analogWrite(workingLEDlower, midlightlevel);
+    analogWrite(workingLEDupper, midlightlevel);
     LightOutputArray[workingLightNumber] = 0;
   }//Hight beams and glowing panel
   else if (workinglower == LOW&&workingStateLights == LOW) {
@@ -282,7 +290,7 @@ serialsend(); //send the serial data
       Serial.println((String)"Breakpoint 7/" + workingLightNumber);
       }
     analogWrite(workingLEDlower, 255);
-    //analogWrite(workingLEDupper, midlightlevel); //this seems erroneous
+    analogWrite(workingLEDupper, 0);
     LightOutputArray[workingLightNumber] = 255;
   }//High beams no glow on rest of panel
   else if (workinglower == LOW){
@@ -290,7 +298,7 @@ serialsend(); //send the serial data
       Serial.println((String)"Breakpoint 8/" + workingLightNumber);
       }
     analogWrite(workingLEDlower, 255);
-    analogWrite(workingLEDupper, 0);
+    analogWrite(workingLEDupper, midlightlevel);
     LightOutputArray[workingLightNumber] = 255;
   }//all off panel glowing
   else if (workinglower == HIGH&&workingupper == HIGH&&workingStateLights == HIGH&&workingStateHighBeams == LOW) {
@@ -308,35 +316,44 @@ serialsend(); //send the serial data
   if (debug == 1){
     Serial.println((String)"Breakpoint 9.5/" + workingLightNumber);
   }
+  else if (workinglower == HIGH&&workingupper == LOW&&workingStateLights == LOW&&workingStateHighBeams == LOW) { //possibly redudent, this should proably be all converted to tables
+    analogWrite(workingLEDlower, 0);
+    analogWrite(workingLEDupper, 0);
+    LightOutputArray[workingLightNumber] = 0;
+    if (debug == 1){
+      Serial.println((String)"Breakpoint 9.75/" + workingLightNumber);
+      }
+    }
+  //else if (workingupper == HIGH&&workingStateLights == LOW&&workingStateHighBeams == LOW 
   }
   }//end Light selection function
 
 //Override logic block 
 
-int OverrideRoutine(int WorkingStateEngine, int WorkingStateButtonHigh, int WorkingLEDlower, int WorkingOutput, int WorkingSwitchNumber) {
+int OverrideRoutine(int WorkingStateIgnition, int WorkingStateButtonHigh, int WorkingLEDlower, int WorkingOutput, int WorkingSwitchNumber) {
   //tables are established in global variables
   //check for state change from last time
-  if (WorkingStateButtonHigh != PreviousNameArray[WorkingSwitchNumber]&&WorkingStateEngine == HIGH) {
+  if (WorkingStateButtonHigh != PreviousNameArray[WorkingSwitchNumber]&&WorkingStateIgnition == LOW) { //increments the value in the counter array on change detection
         WorkingCounterArray[WorkingSwitchNumber] ++;
     if (debug == 1) { 
-    Serial.println((String)"Breakpoint 10/" + WorkingNumberCounterArray[WorkingSwitchNumber] + WorkingNumberCounterArray[WorkingSwitchNumber]);//same
+    Serial.println((String)"Breakpoint 10/" + WorkingCounterArray[WorkingSwitchNumber]);//same
     }
         PreviousNameArray[WorkingSwitchNumber] = WorkingStateButtonHigh;//same
   }
-    if (WorkingCounterArray[WorkingSwitchNumber] >= 3&&WorkingStateButtonHigh == HIGH&&WorkingStateEngine == HIGH) {
+    if (WorkingCounterArray[WorkingSwitchNumber] >= OverrideNumber&&WorkingStateButtonHigh == LOW&&WorkingStateIgnition == LOW) {
     analogWrite(WorkingLEDlower, 255);
     LightOutputArray[WorkingSwitchNumber] = 255;
    if (debug == 1){
-    Serial.print((String)"Breakpoint 10.5/" + WorkingNumberCounterArray[WorkingSwitchNumber] + "255");
+    Serial.print((String)"Breakpoint 10.5/" + WorkingNumberCounterArray[WorkingSwitchNumber] + "/255");
    }
     
   }
-  else if (WorkingStateButtonHigh == LOW&&WorkingStateEngine == LOW) {
+  else if (WorkingStateButtonHigh == LOW&&WorkingStateIgnition == LOW&&WorkingCounterArray[WorkingSwitchNumber] == 1) {
     WorkingCounterArray[WorkingSwitchNumber] = 0;
     analogWrite(WorkingLEDlower, 255);
     LightOutputArray[WorkingSwitchNumber] = 255;
        if (debug == 1){
-    Serial.print((String)"Breakpoint 11/" + WorkingNumberCounterArray[WorkingSwitchNumber] + "255");
+    Serial.print((String)"Breakpoint 11/" + WorkingNumberCounterArray[WorkingSwitchNumber] + "/255");
    }
   }
   else {
@@ -363,7 +380,7 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
   else if (workingupper == LOW&&workingStateLights == LOW) {
     if (debug == 1){
     Serial.print((String)"Breakpoint 14/" + workingLightNumber + "High");
-   }
+    }
     analogWrite(workingLEDupper, 255);
     analogWrite(workingLEDlower, midlightlevel);
     LightOutputArray[workingLightNumber] = 255;
