@@ -173,9 +173,6 @@ Serial.println("setup complete...");
 
 void loop() { //MAIN LOOP
   
-//resulting variables (for light bars)(and declare them as zero so that they don't do random things)
-int lightbar1out = 0;
-int lightbar2out = 0;
   
 systemtime ++;
 
