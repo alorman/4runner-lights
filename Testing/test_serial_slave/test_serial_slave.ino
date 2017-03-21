@@ -1,5 +1,5 @@
 // Testing serial1 writing between Teensy boards
-//Slave
+  //Slave
 
 //serial vars
 int voltage = 0;
