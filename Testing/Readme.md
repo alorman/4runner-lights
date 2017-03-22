@@ -2,11 +2,14 @@ TODO
 
 * Master:
 
-Figure out why we have two sets of pin definitions
+Add low voltage lock out
+
+Add low voltage sleep mode
 
 
-set variable state for intermediate light levels
 
 * Slave:
 
-Add debug flag in header
+Add thermo sensor and fan cut in
+
+Add low voltage sleep mode
