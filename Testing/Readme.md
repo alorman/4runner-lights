@@ -6,6 +6,8 @@ Add low voltage lock out
 
 Add low voltage sleep mode
 
+Add dashcam keep-alive for XXXX
+
 
 
 * Slave:
