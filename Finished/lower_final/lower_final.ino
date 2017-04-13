@@ -1,5 +1,11 @@
 // Testing serial1 writing between Teensy boards
   //Slave
+  
+//Debug
+int debug = 1; //set to 1 for advanced debug via usb
+
+//Fan options
+int fanconnected = 1; //set to 1 for fan present, 0 for fan not connectioned
 
 //serial vars
 int voltage = 0;
@@ -26,15 +32,18 @@ int ch5pin = 54;
 int ch6pin = 55;
 
 //fan pin
-
 int fanpin = 56; //not used in testing
 int fanstate = 0;
+float fanstarttemp = 0;
 
 //input sensing vars
-int ignitionpin = 17;
+int ignitionpin = 17; 
 int lightspin = 16;
 int highbeamspin = 15;
 int voltagepin = A0;
+int tempsensepin = 18;
+float tempF = 0;
+int tempsenseraw = 0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -51,6 +60,7 @@ pinMode(ignitionpin, INPUT);
 pinMode(lightspin, INPUT);
 pinMode(highbeamspin, INPUT);
 pinMode(voltagepin, INPUT);
+pinMode(tempsensepin, INPUT);
 
 //fan pin
 pinMode(fanpin, OUTPUT);
@@ -78,11 +88,30 @@ analogWrite(ch4pin, ch4state);
 analogWrite(ch5pin, ch5state);
 analogWrite(ch6pin, ch6state);
 
-digitalWrite(fanpin, fanstate);
+//read the temp only if there's some output going on. Saves on cycles
+if(ch1state != 0 || ch2state != 0 || ch3state != 0 || ch4state != 0 || ch5state != 0 || ch6state != 0){
+tempread();
+  // fan logic
+  if(fanconnected == 1) {
+   if(tempF >= fanstarttemp) {
+    fanstate = 1;
+   }
+   else {
+    fanstate = 0;
+   }
+   }
+  }
+  else {
+  fanstate = 0;
+  }
+  digitalWrite(fanpin, fanstate);
 
+//If there is data in the serial buffer, read it
 if(Serial1.available() > 0){
-  serialread();
+  serialread(); //send serial sentence to master
+  if(debug == 1){ //send serial debug to terminal over usb
   serialdiagnostic();
+   }
   }
   
 serialsend();
@@ -116,11 +145,18 @@ void serialread() { //serial read function. Use this area to adjust what gets li
   ch6state = tempch6.toInt();
 }
 void serialdiagnostic() { //diagnostic readout for USB serial port
-    Serial.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/V" + voltage + "/I" + ignitionstate + "/L" + lightsstate + "/H" + highbeamsstate + "/CH1" + ch1state + "/CH2" + ch2state + "/CH3" + ch3state + "/CH4" + ch4state + "/CH5" + ch5state + "/CH6" + ch6state + "/");
+    Serial.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/V" + voltage + "/I" + ignitionstate + "/L" + lightsstate + "/H" + highbeamsstate + "/TMP" + tempF + "/CH1" + ch1state + "/CH2" + ch2state + "/CH3" + ch3state + "/CH4" + ch4state + "/CH5" + ch5state + "/CH6" + ch6state + "/");
   }
 
 void serialsend()  { //send the outgoing serial data
   Serial1.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/" + voltage + "/" + ignitionstate + "/" + lightsstate + "/" + highbeamsstate + "/" + ch1state + "/" + ch2state + "/" + ch3state + "/" + ch4state + "/" + ch5state + "/" + ch6state + "/");
 }
 
+void tempread() { //read and do math on the temperature sensor
+  tempsenseraw = analogRead(tempsensepin);
+  float voltage = tempsenseraw * 3.3;
+  voltage /= 1024.0;
+  float tempC = (voltage - 0.5) * 100;
+  tempF = (tempC * 9.0 / 5.0) + 32.0;
+}
 
