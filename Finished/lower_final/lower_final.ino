@@ -89,7 +89,7 @@ analogWrite(ch5pin, ch5state);
 analogWrite(ch6pin, ch6state);
 
 //read the temp only if there's some output going on. Saves on cycles
-if(ch1state != 0 || ch2state != 0 || ch3state != 0 || ch4state != 0 || ch5state != 0 || ch6state != 0){
+if(ch1state != 0 || ch2state != 0 || ch3state != 0 || ch4state != 0 || ch5state != 0 || ch6state != 0 || debug == 1){
 tempread();
   // fan logic
   if(fanconnected == 1) {
