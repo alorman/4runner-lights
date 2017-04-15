@@ -71,6 +71,7 @@ delay(1000);
 Serial.println("setup complete...");
 }
 
+//////////////////main loop
 void loop() {
 //systemtime ++;
 //read the actual sensors in here
@@ -116,7 +117,7 @@ if(Serial1.available() > 0){
   
 serialsend();
 }
-
+////////////main loop
 
 void serialread() { //serial read function. Use this area to adjust what gets listened to
   delay (50);
