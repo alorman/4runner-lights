@@ -5,7 +5,7 @@
 int debug = 1; //set to 1 for advanced debug via usb
 
 //Fan options
-int fanconnected = 1; //set to 1 for fan present, 0 for fan not connectioned
+int fanconnected = 0; //set to 1 for fan present, 0 for fan not connectioned
 
 //serial vars
 int voltage = 0;
@@ -34,7 +34,7 @@ int ch6pin = 55;
 //fan pin
 int fanpin = 56; //not used in testing
 int fanstate = 0;
-float fanstarttemp = 0;
+float fanstarttemp = 100;
 
 //input sensing vars
 int ignitionpin = 17; 
