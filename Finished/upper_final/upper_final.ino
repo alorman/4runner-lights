@@ -7,7 +7,7 @@ int debug = 1; //change to 1 to debug over serial
 int midlightlevel = 50;
 int midLEDoutlevel = 75;
 
-//Override options (how many switch toggles are required  to override)
+//Override options
 int OverrideNumber = 5; //should always be an odd number
 
 //Blink intervals (ms)
@@ -24,28 +24,47 @@ String mastername = "Lower";
 //end vars needed for serial driver
 
 //LED Outputs
+<<<<<<< HEAD
 int S1LEDlower = 10; //testing values
 int S1LEDupper = 0;
+=======
+int S1LEDlower = 10;
+int S1LEDupper = 9;
+>>>>>>> parent of 5b85ba9... dashcam code functioning
 int S2LEDlower = 51;//testing from here out not used
 int S2LEDupper = 52;
 int S3LEDlower = 53;
 int S3LEDupper = 54;
+<<<<<<< HEAD
 int S4LEDlower = 55; //assign to dashcam for testing
 int S4LEDupper = 56;  //assign to dashcam for testing
+=======
+int S4LEDlower = 55;
+int S4LEDupper = 56;
+>>>>>>> parent of 5b85ba9... dashcam code functioning
 int S5LEDlower = 57;
 int S5LEDupper = 58;
 int S6LEDlower = 59;
-//int S7LEDupper = 60;//not used above
+int S7LEDupper = 60;//not used above
 
 // Switch inputs
+<<<<<<< HEAD
 int S1lowerPin = 4;
+=======
+int S1lowerPin = 2;
+>>>>>>> parent of 5b85ba9... dashcam code functioning
 int S1upperPin = 3;
 int S2lowerPin = 61;//testing not used below
 int S2upperPin = 62;
 int S3lowerPin = 63;
 int S3upperPin = 64;
+<<<<<<< HEAD
 int S4lowerPin = 65; //dashcam testing
 int S4upperPin = 66;  //dashcam testing
+=======
+int S4lowerPin = 65;
+int S4upperPin = 66;
+>>>>>>> parent of 5b85ba9... dashcam code functioning
 int S5lowerPin = 67;
 int S5upperPin = 68;
 int S6lowerPin = 69;
@@ -58,12 +77,15 @@ int S2statelower = 0;
 int S2stateupper = 0;
 int S3statelower = 0;
 int S3stateupper = 0;
+<<<<<<< HEAD
 int S4stateupper = 1; //pegged to 1 without live swithc
 int S4statelower = 1; //same
 int S5statelower = 0;
 int S5stateupper = 0;
 int S6statelower = 0;
 int S6stateupper = 0;
+=======
+>>>>>>> parent of 5b85ba9... dashcam code functioning
 
 
 //various blink intervals
@@ -119,13 +141,10 @@ int lightbar2out = 0;
 //Override function variables (and declare them as zero so that they don't do random things)
 int Override1 = 0;
 int Override2 = 0;
-
 //The dashcam variables
-//int DashcamPin = 12;
-int DashCamPower = 8;
-int DashCamDropoutVoltage = 1145;
-int DashCamOn = 1;
-int DashCamOff = 0;
+int Dashcam1;
+int DashCamOut;
+int DashCamProtectOut;
 
 //Normal on/off function array variables
 int LightOutput1 = 0;
@@ -148,10 +167,6 @@ void setup() {
   pinMode(S2LEDupper, OUTPUT);
   pinMode(S3LEDlower, OUTPUT);
   pinMode(S3LEDupper, OUTPUT);
-  pinMode(S4LEDlower, OUTPUT);
-  pinMode(S4LEDupper, OUTPUT);
-  pinMode(S5LEDlower, OUTPUT);
-  pinMode(S5LEDupper, OUTPUT);
   //Switch inputs
   pinMode(S1lowerPin, INPUT);
   pinMode(S1upperPin, INPUT);
@@ -159,15 +174,6 @@ void setup() {
   pinMode(S2upperPin, INPUT);
   pinMode(S3lowerPin, INPUT);
   pinMode(S3upperPin, INPUT);
-  pinMode(S4lowerPin, INPUT);
-  pinMode(S4upperPin, INPUT);
-  pinMode(S5lowerPin, INPUT);
-  pinMode(S5upperPin, INPUT);
-  pinMode(S6lowerPin, INPUT);
-  pinMode(S6upperPin, INPUT);
-
-  //Dashcam Outputs;
-  pinMode(DashCamPower, OUTPUT);
   
   //Environmental inputs
   //pinMode(lights, INPUT);
@@ -181,25 +187,18 @@ void setup() {
   int LightNumber1 = 1;
   int LightNumber2 = 2;
   int LightNumber3 = 3;
-  int LightNumber4 = 4;
-  int LightNunber5 = 5;
-  int LightNumber6 = 6;
 
   //resulting variables (for light bars)(and declare them as zero so that they don't do random things)
   int lightbar1out = 0;
   int lightbar2out = 0;
-  int lightbar3out = 0;
-  int lightbar4out = 0;
-  int lightbar5out = 0;
-  int lightbar6out = 0;
-  
   //Override function variables (and declare them as zero so that they don't do random things)
   int Override1 = 0;
   int Override2 = 0;
-  int Override3 = 0;
-  int Override4 = 0;
-  int Override5 = 0;
-  int Override6 = 0;
+
+    //The dashcam variables
+  int Dashcam1;
+  int DashCamOut;
+  int DashCamProtectOut;
   
  //Setup the serial driver and diagnostic
  //pinMode(ledpin, OUTPUT);
@@ -216,28 +215,30 @@ systemtime ++;
 currentMillis = millis();
 
 
-  //read switch state variables
+  //switch state variables
  S1statelower = digitalRead(S1lowerPin);
  S1stateupper = digitalRead(S1upperPin);
  S2statelower = digitalRead(S2lowerPin);
  S2stateupper = digitalRead(S2upperPin);
  S3statelower = digitalRead(S3lowerPin);
  S3stateupper = digitalRead(S3upperPin);
+<<<<<<< HEAD
  //S4statelower = digitalRead(S4lowerPin); //commented out lacking a real hardware dashcam switch
  //S4stateupper = digitalRead(S4upperPin); // same
  S5stateupper = digitalRead(S5upperPin);
  S6statelower = digitalRead(S6lowerPin);
  S6stateupper = digitalRead(S6upperPin);
+=======
+>>>>>>> parent of 5b85ba9... dashcam code functioning
   
 //read the actual sensors in here
 
 
 if (ignitionstate == HIGH) { //if the car is on, run the normal lighting procedure
-    
     //Call the main light controls for 1 and 2
     lightbar1out = LightLogicFunction(S1statelower, S1stateupper, S1LEDlower, S1LEDupper, lightsstate, highbeamsstate, ignitionstate, 0, lightbar1out);//call ofthe actual function
     //lightbar2out = LightLogicFunction(S2statelower, S2stateupper, S2LEDlower, S2LEDupper, lightsstate, highbeamsstate, ignitionstate, 1, lightbar2out);//call ofthe actual function
-    
+
     //reset the counters to zero for the override tables
     WorkingCounterArray[0] = 0;
     WorkingCounterArray[1] = 0;
@@ -253,21 +254,18 @@ if (ignitionstate == HIGH) { //if the car is on, run the normal lighting procedu
     if (debug == 1) {
       Serial.println("Main Loop debug 0.75");
     }
-    
 if (ignitionstate == LOW) { //While the car is off run the following 
+    //LightOutputArray[0] = 0;
+    //LightOutputArray[1] = 0;
     Override1 = OverrideRoutine(ignitionstate, S1statelower, S1LEDlower, LightOutputArray[0], 0);
    // Override2 = OverrideRoutine(ignitionstate, S2statelower, S2LEDlower, lightbar2out, 1);
-    
+    //Dashcam1 = DashCamLogic(S3statelower, S3stateupper, S3LEDlower, S3LEDupper, lightsstate, 2, DashCamProtectOut);
     if(debug == 1){
       Serial.println("Main Loop debug 0.8");
     }
     delay(10);
 }
 
-//Run the dashcam logic, since we don't really care what state the car is in to do so
-   DashCamLogic(S4statelower, S4stateupper, S4LEDlower, S4LEDupper, ignitionstate, lightsstate, 4, DashCamPower); //single integer is WorkingLightNumber, should match the LEDs and Switches being used
-
-//Serial read
 if(Serial1.available() > 0){ //if the port has data on the buffer then read it then send it out the diagnostic
   serialread();
   }
@@ -280,14 +278,28 @@ serialsend(); //send the serial data
 //Light bar logic block
 
 // Defining all our input variables into the function
-//Writing directly the variables for the driver, rather than doing an analogWrite. Doing analogWrite for the display LEDS
+//Writing directly the variables, rather than doing an analogWrite.
 //UPPER = AUTO and LOWER = HIGH BEAMS
-// HIGH and LOW are REVERSED!!! (on input switches)
   int LightLogicFunction(int workinglower, int workingupper, int workingLEDlower, int workingLEDupper, int workingStateLights, int workingStateHighBeams, int workingIgnitionInput, int workingLightNumber, int workingoutput){
+<<<<<<< HEAD
+=======
+    //define the array of the output names before we get too far
+    //start the main loop
+    if (workingupper == LOW&&workinglower == LOW) {
+      if (debug == 1) {
+        Serial.println((String)"Breakpoint 1/" + workingLightNumber);
+        //  Serial.println(workinglower);
+      }
+  }   
+>>>>>>> parent of 5b85ba9... dashcam code functioning
   //check to see if we're in auto then check to see about lights, if yes, then high beams
    if (workingupper == LOW&&workingStateLights == HIGH&&workingStateHighBeams == LOW) {
       if (debug == 1) {
+<<<<<<< HEAD
       Serial.println((String)"Lights Breakpoint 2/" + workingLightNumber);
+=======
+      Serial.println((String)"Breakpoint 2/" + workingLightNumber);
+>>>>>>> parent of 5b85ba9... dashcam code functioning
       }
     analogWrite(workingLEDupper, 255);
     analogWrite(workingLEDlower, midlightlevel);
@@ -296,7 +308,11 @@ serialsend(); //send the serial data
     //Auto LEDs but with lights but no hight beams
   else if (workingupper == LOW&&workingStateLights == HIGH&&workingStateHighBeams == HIGH) {
       if (debug == 1) {
+<<<<<<< HEAD
       Serial.println((String)"Lights Breakpoint 3/" + workingLightNumber);
+=======
+      Serial.println((String)"Breakpoint 3/" + workingLightNumber);
+>>>>>>> parent of 5b85ba9... dashcam code functioning
       }
     analogWrite(workingLEDupper, 255);
     analogWrite(workingLEDlower, midlightlevel);
@@ -304,7 +320,11 @@ serialsend(); //send the serial data
    }//no switch action but lights on, so glow the panel
   else if (workingupper == HIGH&&workinglower ==HIGH&&workingStateLights == HIGH&&workingStateHighBeams == LOW) {
       if (debug == 1) {
+<<<<<<< HEAD
       Serial.println((String)"Lights Breakpoint 4/" + workingLightNumber);
+=======
+      Serial.println((String)"Breakpoint 4/" + workingLightNumber);
+>>>>>>> parent of 5b85ba9... dashcam code functioning
       }
     analogWrite(workingLEDlower, midlightlevel);
     analogWrite(workingLEDupper, midlightlevel);
@@ -312,7 +332,11 @@ serialsend(); //send the serial data
   }//Auto LEDS, but no car lights
   else if (workingupper == LOW&&workingStateLights == LOW&&workingStateHighBeams == LOW) {
       if (debug == 1) {
+<<<<<<< HEAD
       Serial.println((String)"Lights Breakpoint 5/" + workingLightNumber);
+=======
+      Serial.println((String)"Breakpoint 5/" + workingLightNumber);
+>>>>>>> parent of 5b85ba9... dashcam code functioning
       }
     analogWrite(workingLEDlower, 0);
     analogWrite(workingLEDupper, 255);
@@ -320,7 +344,11 @@ serialsend(); //send the serial data
   }//all off, no glow
   else if (workinglower == HIGH&&workingupper == HIGH&&workingStateLights == HIGH&&workingStateHighBeams == HIGH) {
       if (debug == 1) {
+<<<<<<< HEAD
       Serial.println((String)"Lights Breakpoint 6/" + workingLightNumber);
+=======
+      Serial.println((String)"Breakpoint 6/" + workingLightNumber);
+>>>>>>> parent of 5b85ba9... dashcam code functioning
       }
     analogWrite(workingLEDlower, midlightlevel);
     analogWrite(workingLEDupper, midlightlevel);
@@ -328,7 +356,11 @@ serialsend(); //send the serial data
   }//Hight beams and glowing panel
   else if (workinglower == LOW&&workingStateLights == LOW) {
       if (debug == 1) {
+<<<<<<< HEAD
       Serial.println((String)"Lights Breakpoint 7/" + workingLightNumber);
+=======
+      Serial.println((String)"Breakpoint 7/" + workingLightNumber);
+>>>>>>> parent of 5b85ba9... dashcam code functioning
       }
     analogWrite(workingLEDlower, 255);
     analogWrite(workingLEDupper, 0);
@@ -336,7 +368,11 @@ serialsend(); //send the serial data
   }//High beams no glow on rest of panel
   else if (workinglower == LOW){
       if (debug == 1) {
+<<<<<<< HEAD
       Serial.println((String)"Lights Breakpoint 8/" + workingLightNumber);
+=======
+      Serial.println((String)"Breakpoint 8/" + workingLightNumber);
+>>>>>>> parent of 5b85ba9... dashcam code functioning
       }
     analogWrite(workingLEDlower, 255);
     analogWrite(workingLEDupper, midlightlevel);
@@ -344,7 +380,11 @@ serialsend(); //send the serial data
   }//all off panel glowing
   else if (workinglower == HIGH&&workingupper == HIGH&&workingStateLights == HIGH&&workingStateHighBeams == LOW) {
       if (debug == 1) {
+<<<<<<< HEAD
       Serial.println((String)"Lights Breakpoint 9/" + workingLightNumber);
+=======
+      Serial.println((String)"Breakpoint 9/" + workingLightNumber);
+>>>>>>> parent of 5b85ba9... dashcam code functioning
       }
     analogWrite(workingLEDlower, midlightlevel);
     analogWrite(workingLEDupper, midlightlevel);
@@ -355,14 +395,22 @@ serialsend(); //send the serial data
   analogWrite(workingLEDupper, 0);
   LightOutputArray[workingLightNumber] = 0; // turn off any light output too
   if (debug == 1){
+<<<<<<< HEAD
     Serial.println((String)"Lights Breakpoint 9.5/" + workingLightNumber);
+=======
+    Serial.println((String)"Breakpoint 9.5/" + workingLightNumber);
+>>>>>>> parent of 5b85ba9... dashcam code functioning
   }
   else if (workinglower == HIGH&&workingupper == LOW&&workingStateLights == LOW&&workingStateHighBeams == LOW) { //possibly redudent, this should proably be all converted to tables
     analogWrite(workingLEDlower, 0);
     analogWrite(workingLEDupper, 0);
     LightOutputArray[workingLightNumber] = 0;
     if (debug == 1){
+<<<<<<< HEAD
       Serial.println((String)"Lights Breakpoint 9.75/" + workingLightNumber);
+=======
+      Serial.println((String)"Breakpoint 9.75/" + workingLightNumber);
+>>>>>>> parent of 5b85ba9... dashcam code functioning
       }
     }
   //else if (workingupper == HIGH&&workingStateLights == LOW&&workingStateHighBeams == LOW 
@@ -412,38 +460,28 @@ int OverrideRoutine(int WorkingStateIgnition, int WorkingStateButtonHigh, int Wo
 }
 
 //Dashcam logic block
-//HIGH and LOW switch logic is reversed!!!
 
-int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int workingLEDupper, int workingStateIgnition, int workingStateLights, int workingLightNumber, int workingPower){ //UPPER  = auto and LOWER = ON no matter what
-  if (voltage >= DashCamDropoutVoltage){ //check to make sure the voltage is high enough so we don't kill a battery
-   if (workingupper == LOW && workingStateIgnition == LOW) { // car off, auto mode
-   digitalWrite(workingPower, DashCamOff);
-   analogWrite(workingLEDupper, 0);
-   analogWrite(workingLEDlower, 0);
-   if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 1");
-     }
+int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int workingLEDupper, int workingStateLights, int workingLightNumber, int workingProtect){
+    if (workingupper == HIGH&&workinglower == LOW) {
+    if (debug == 1){
+    Serial.print((String)"Breakpoint 13/" + workingLightNumber);
    }
-   else if (workingupper == LOW && workingStateLights == LOW && workingStateIgnition == HIGH) { //car on auto mode, no lights
-    digitalWrite(workingPower, DashCamOn);
-    analogWrite(workingLEDupper, 255);
-    analogWrite(workingLEDlower, 0);
-     if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 2");
-     }
-   }
-   else if (workingupper == LOW && workingStateLights == HIGH && workingStateIgnition == HIGH) { //car on, lights on, auto mode
-    digitalWrite(workingPower, DashCamOn);
+  }   
+  //If we're in auto and the lights are on, glow the dash
+  else if (workingupper == LOW&&workingStateLights == LOW) {
+    if (debug == 1){
+    Serial.print((String)"Breakpoint 14/" + workingLightNumber + "High");
+    }
     analogWrite(workingLEDupper, 255);
     analogWrite(workingLEDlower, midlightlevel);
-     if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 3");
-     }
+    LightOutputArray[workingLightNumber] = 255;
+   }//if we're in OFF and the dash still needs glowing
+  else if (workingupper == HIGH&&workinglower ==HIGH&&workingStateLights == LOW) {
+    if (debug == 1){
+    Serial.print((String)"Breakpoint 14.5/" + workingLightNumber + "Panel only");
    }
-   else if (workingupper == HIGH && workinglower == HIGH && workingStateLights == HIGH && workingStateIgnition == HIGH) { //no orders, general backlight
-    digitalWrite(workingPower, DashCamOff);
-    analogWrite(workingLEDupper, midlightlevel);
     analogWrite(workingLEDlower, midlightlevel);
+<<<<<<< HEAD
      if (debug == 1) {
     Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 4");
      }
@@ -468,53 +506,58 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
   else if (workinglower == LOW && workingStateLights == HIGH && workingStateIgnition == HIGH) { //force on, lights on 
     digitalWrite(workingPower, DashCamOn);
     analogWrite(workingLEDlower, 255);
+=======
+>>>>>>> parent of 5b85ba9... dashcam code functioning
     analogWrite(workingLEDupper, midlightlevel);
-     if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 6");
-     }
+    LightOutputArray[workingLightNumber] = 0;
+  }//in auto with no car lighting on
+  else if (workingupper == LOW&&workingStateLights == HIGH) {
+    if (debug == 1){
+    Serial.print((String)"Breakpoint 15/" + workingLightNumber + "High");
    }
-  else if (workinglower == HIGH && workingupper == HIGH && workingStateIgnition == LOW) { //needed to clear the light state
-    digitalWrite(workingPower, DashCamOff);
+    analogWrite(workingLEDlower, 0);
+    analogWrite(workingLEDupper, 255);
+    LightOutputArray[workingLightNumber] = 255;
+  }//dashcam off, and panel not glowing
+  else if (workinglower == HIGH&&workingStateLights == HIGH&&workingupper == HIGH) {
+    if (debug == 1){
+    Serial.print((String)"Breakpoint 16/" + workingLightNumber + "Off");
+   }
     analogWrite(workingLEDlower, 0);
     analogWrite(workingLEDupper, 0);
-     if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 7");
-     }
+    LightOutputArray[workingLightNumber] = 255;
+  }//protect mode on and panel glowing
+  else if (workinglower == LOW&&workingStateLights == LOW) {
+    if (debug == 1){
+    Serial.print((String)"Breakpoint 17/" + workingLightNumber + "High");
    }
-  else if (workinglower == LOW && workingStateIgnition == HIGH && workingStateLights == LOW) { //needed to keep on in auto no lights
-    digitalWrite(workingPower, DashCamOn);
-    analogWrite(workingLEDlower, 255);
-    analogWrite(workingLEDupper, 0);
-     if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 8");
-     }
-   }
-  else if (workinglower == LOW && workingStateIgnition == HIGH && workingStateLights == HIGH) {
-    digitalWrite(workingPower, DashCamOn);
     analogWrite(workingLEDlower, 255);
     analogWrite(workingLEDupper, midlightlevel);
-     if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 9");
-     }
+    LightOutputArray[workingLightNumber] = 255;
+    if (currentMillis - previousMillis >= OverrideBlinkTime) {
+      previousMillis = currentMillis;
+    digitalWrite(workingProtect, HIGH);
+    }
+    else
+    digitalWrite(workingProtect, LOW);
+  }//protect mdoe and panel not glowing
+  else if (workinglower == LOW){
+    if (debug == 1){
+    Serial.print((String)"Breakpoint 18/" + workingLightNumber + "High");
    }
-  else if (workinglower == HIGH && workingStateIgnition == LOW && workingStateLights == LOW) {
-    digitalWrite(workingPower, DashCamOff);
-    analogWrite(workingLEDlower, 0);
+    analogWrite(workingLEDlower, 255);
     analogWrite(workingLEDupper, 0);
-     if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 10");
-     }
-   }
+    LightOutputArray[workingLightNumber] = 255;
+    if (currentMillis - previousMillis >= OverrideBlinkTime) {
+      previousMillis = currentMillis;
+    digitalWrite(workingProtect, HIGH);
+    }
+    else
+    digitalWrite(workingProtect, LOW);
   }
-  else {
-  digitalWrite(workingPower, DashCamOn); //shutdown if batts low
-  analogWrite(workingLEDupper, 0);
-  analogWrite(workingLEDlower, 0);
-   if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 11");
-     }
-  }
-} //end dashcam subroutine
+  }//end Dascam override function
+
+
 
 void serialread() { //serial read function. Use this area to adjust what gets listened to
   delay (50);
