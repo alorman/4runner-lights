@@ -62,13 +62,9 @@ int S5stateupper = 0;
 int S6statelower = 0;
 int S6stateupper = 0;
 
-
-//various blink intervals
-unsigned long previousmillis = 0; // undevolt variable
-const long undervoltinterval = 1000; // undervolt timing
-const long undervoltblinks = 5; //undervolt blinks
-int currentblinks = 0; //undervolt current blinks
-int OverrideBlinkTime = 300; //blink interval for the override code
+//Global variables for the timer routing
+unsigned long previousMillis = 0;
+unsigned long currentMillis = 0;
 
 //Override function variables
 int WorkingPreviousOverrideState1 = 0;//will work as global  variable -- need not be a static
@@ -99,10 +95,6 @@ int static WorkingCounterArray[] = {WorkingOverrideCount1, WorkingOverrideCount2
 int static PreviousNameArray[] = {WorkingPreviousOverrideState1, WorkingPreviousOverrideState2, WorkingPreviousOverrideState3, WorkingPreviousOverrideState4, WorkingPreviousOverrideState5, WorkingPreviousOverrideState6};
 int static WorkingNumberCounterArray[] = {WorkingNumberCounter1, WorkingNumberCounter2, WorkingNumberCounter3, WorkingNumberCounter4, WorkingNumberCounter5, WorkingNumberCounter6};
 
-//declare variable needed for the protect record functionality
-long static previousMillis = 0;
-unsigned long currentMillis = millis(); //create timing variable for the flashing protect button in dashcam
-
 //output vars
 int ledpin = 13;
 int lightbar1out = 0;
@@ -116,8 +108,9 @@ int Override2 = 0;
 //int DashcamPin = 12;
 int DashCamPower = 8;
 int DashCamDropoutVoltage = 1145;
-int DashCamOn = 1;
+int DashCamOn = 1; //assign these to change the on off ports on the dashcam
 int DashCamOff = 0;
+int DashCamBlinkInterval = 1000; //Dashcam override blink interval
 
 //Normal on/off function array variables
 int LightOutput1 = 0;
@@ -204,7 +197,8 @@ Serial.println("setup complete...");
 void loop() { //MAIN LOOP
   
   
-systemtime ++;
+systemtime ++; //increment the main counter
+currentMillis = millis(); //assign timing in the main loop
 
   //read switch state variables
  S1statelower = digitalRead(S1lowerPin);
@@ -453,15 +447,17 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
     Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 4");
      }
    }
-   else if (workinglower == LOW && workingStateLights == LOW) { //ignition on, no lights, commanded force on
+   else if (workinglower == LOW && workingStateLights == LOW && workingStateIgnition == LOW) { //ignition off, no lights, commanded force on
+    int workingDashCamLowerOut;
+    Timer(DashCamBlinkInterval, workingDashCamLowerOut, "Blink");
     digitalWrite(workingPower, DashCamOn);
-    analogWrite(workingLEDlower, 255);
+    analogWrite(workingLEDlower, workingDashCamLowerOut);
     analogWrite(workingLEDupper, 0);
      if (debug == 1) {
     Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 5");
      }
    }
-   else if (workinglower == LOW && workingStateLights == LOW) { //ignition off, no lights, commanded force on, 
+   else if (workinglower == LOW && workingStateLights == LOW && workingStateIgnition == HIGH) { //ignition on, no lights, commanded force on, 
     digitalWrite(workingPower, DashCamOn);
     analogWrite(workingLEDlower, 255);
     analogWrite(workingLEDupper, 0);
@@ -554,6 +550,22 @@ void serialsend()  { //send the outgoing serial data
   Serial1.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/" + voltage + "/" + ignitionstate + "/" + lightsstate + "/" + highbeamsstate + "/" + LightOutputArray[0] + "/" + LightOutputArray[1] + "/" + LightOutputArray[2] + "/" + LightOutputArray[3] + "/" + LightOutputArray[4] + "/" + LightOutputArray[5] + "/");
 }
 
+void Timer(int workingInterval, int workingVariable, String workingType) { //Timer subrouting for blinking and powerdown-timers
+  if (currentMillis - previousMillis >= workingInterval) {
+    previousMillis = currentMillis;
+    if (workingType == "Blink") { //Blinking code
+      if (workingVariable == 1) {
+        workingVariable = 0;
+        }
+        else {
+          workingVariable = 1;
+        }
+      }
+    if (workingType == "Shutdown") {
+      workingVariable = 0;
+      }
+    }
+  }
 
 
 
