@@ -284,13 +284,6 @@ serialsend(); //send the serial data
 //UPPER = AUTO and LOWER = HIGH BEAMS
 // HIGH and LOW are REVERSED!!! (on input switches)
   int LightLogicFunction(int workinglower, int workingupper, int workingLEDlower, int workingLEDupper, int workingStateLights, int workingStateHighBeams, int workingIgnitionInput, int workingLightNumber, int workingoutput){
-   /* if (workingupper == LOW && workinglower == LOW) {
-      if (debug == 1) {
-        Serial.println((String)"Lights Breakpoint 1/" + workingLightNumber);
-        //  Serial.println(workinglower); // double button press, why is this even here?
-      }
-  }
-  */
   //check to see if we're in auto then check to see about lights, if yes, then high beams
    if (workingupper == LOW&&workingStateLights == HIGH&&workingStateHighBeams == LOW) {
       if (debug == 1) {
