@@ -111,6 +111,7 @@ int DashCamDropoutVoltage = 1145;
 int DashCamOn = 1; //assign these to change the on off ports on the dashcam
 int DashCamOff = 0;
 int DashCamBlinkInterval = 1000; //Dashcam override blink interval
+int workingDashCamLowerOut = 0;
 
 //Normal on/off function array variables
 int LightOutput1 = 0;
@@ -273,14 +274,14 @@ serialsend(); //send the serial data
     //start the main loop
     if (workingupper == LOW && workinglower == LOW) {
       if (debug == 1) {
-        Serial.println((String)" Breakpoint 1/" + workingLightNumber);
+        Serial.println((String)" Lights Breakpoint 1/" + workingLightNumber);
         //  Serial.println(workinglower);
       }
   }   
   //check to see if we're in auto then check to see about lights, if yes, then high beams
   else if (workingupper == LOW&&workingStateLights == HIGH&&workingStateHighBeams == LOW) {
       if (debug == 1) {
-      Serial.println((String)" Breakpoint 2/" + workingLightNumber);
+      Serial.println((String)" Light Breakpoint 2/" + workingLightNumber);
       }
     analogWrite(workingLEDupper, 255);
     analogWrite(workingLEDlower, midlightlevel);
@@ -289,7 +290,7 @@ serialsend(); //send the serial data
     //Auto LEDs but with lights but no hight beams
   else if (workingupper == LOW&&workingStateLights == HIGH&&workingStateHighBeams == HIGH) {
       if (debug == 1) {
-      Serial.println((String)" Breakpoint 3/" + workingLightNumber);
+      Serial.println((String)" Light Breakpoint 3/" + workingLightNumber);
       }
     analogWrite(workingLEDupper, 255);
     analogWrite(workingLEDlower, midlightlevel);
@@ -297,7 +298,7 @@ serialsend(); //send the serial data
    }//no switch action but lights on, so glow the panel
   else if (workingupper == HIGH&&workinglower ==HIGH&&workingStateLights == HIGH&&workingStateHighBeams == LOW) {
       if (debug == 1) {
-      Serial.println((String)" Breakpoint 4/" + workingLightNumber);
+      Serial.println((String)" Lights Breakpoint 4/" + workingLightNumber);
       }
     analogWrite(workingLEDlower, midlightlevel);
     analogWrite(workingLEDupper, midlightlevel);
@@ -305,7 +306,7 @@ serialsend(); //send the serial data
   }//Auto LEDS, but no car lights
   else if (workingupper == LOW&&workingStateLights == LOW&&workingStateHighBeams == LOW) {
       if (debug == 1) {
-      Serial.println((String)" Breakpoint 5/" + workingLightNumber);
+      Serial.println((String)" Lights Breakpoint 5/" + workingLightNumber);
       }
     analogWrite(workingLEDlower, 0);
     analogWrite(workingLEDupper, 255);
@@ -313,7 +314,7 @@ serialsend(); //send the serial data
   }//all off, no glow
   else if (workinglower == HIGH&&workingupper == HIGH&&workingStateLights == HIGH&&workingStateHighBeams == HIGH) {
       if (debug == 1) {
-      Serial.println((String)" Breakpoint 6/" + workingLightNumber);
+      Serial.println((String)" Lights Breakpoint 6/" + workingLightNumber);
       }
     analogWrite(workingLEDlower, midlightlevel);
     analogWrite(workingLEDupper, midlightlevel);
@@ -321,7 +322,7 @@ serialsend(); //send the serial data
   }//Hight beams and glowing panel
   else if (workinglower == LOW&&workingStateLights == LOW) {
       if (debug == 1) {
-      Serial.println((String)" Breakpoint 7/" + workingLightNumber);
+      Serial.println((String)" Lighs Breakpoint 7/" + workingLightNumber);
       }
     analogWrite(workingLEDlower, 255);
     analogWrite(workingLEDupper, 0);
@@ -329,7 +330,7 @@ serialsend(); //send the serial data
   }//High beams no glow on rest of panel
   else if (workinglower == LOW){
       if (debug == 1) {
-      Serial.println((String)" Breakpoint 8/" + workingLightNumber);
+      Serial.println((String)" Lights Breakpoint 8/" + workingLightNumber);
       }
     analogWrite(workingLEDlower, 255);
     analogWrite(workingLEDupper, midlightlevel);
@@ -337,7 +338,7 @@ serialsend(); //send the serial data
   }//all off panel glowing
   else if (workinglower == HIGH&&workingupper == HIGH&&workingStateLights == HIGH&&workingStateHighBeams == LOW) {
       if (debug == 1) {
-      Serial.println((String)" Breakpoint 9/" + workingLightNumber);
+      Serial.println((String)" Lights Breakpoint 9/" + workingLightNumber);
       }
     analogWrite(workingLEDlower, midlightlevel);
     analogWrite(workingLEDupper, midlightlevel);
@@ -348,14 +349,14 @@ serialsend(); //send the serial data
   analogWrite(workingLEDupper, 0);
   LightOutputArray[workingLightNumber] = 0; // turn off any light output too
   if (debug == 1){
-    Serial.println((String)" Breakpoint 9.5/" + workingLightNumber);
+    Serial.println((String)" Lights Breakpoint 9.5/" + workingLightNumber);
   }
   else if (workinglower == HIGH&&workingupper == LOW&&workingStateLights == LOW&&workingStateHighBeams == LOW) { //possibly redudent, this should proably be all converted to tables
     analogWrite(workingLEDlower, 0);
     analogWrite(workingLEDupper, 0);
     LightOutputArray[workingLightNumber] = 0;
     if (debug == 1){
-      Serial.println((String)" Breakpoint 9.75/" + workingLightNumber);
+      Serial.println((String)" Lights Breakpoint 9.75/" + workingLightNumber);
       }
     }
   //else if (workingupper == HIGH&&workingStateLights == LOW&&workingStateHighBeams == LOW 
@@ -370,7 +371,7 @@ int OverrideRoutine(int WorkingStateIgnition, int WorkingStateButtonHigh, int Wo
   if (WorkingStateButtonHigh != PreviousNameArray[WorkingSwitchNumber]&&WorkingStateIgnition == LOW) { //increments the value in the counter array on change detection
         WorkingCounterArray[WorkingSwitchNumber] ++;
     if (debug == 1) { 
-    Serial.println((String)"Breakpoint 10/" + WorkingCounterArray[WorkingSwitchNumber]);//same
+    Serial.println((String)" Override Breakpoint 10/" + WorkingCounterArray[WorkingSwitchNumber]);//same
     }
         PreviousNameArray[WorkingSwitchNumber] = WorkingStateButtonHigh;//same
   }
@@ -378,7 +379,7 @@ int OverrideRoutine(int WorkingStateIgnition, int WorkingStateButtonHigh, int Wo
     analogWrite(WorkingLEDlower, 255);
     LightOutputArray[WorkingSwitchNumber] = 255;
    if (debug == 1){
-    Serial.print((String)"Breakpoint 10.5/" + WorkingNumberCounterArray[WorkingSwitchNumber] + "/255");
+    Serial.print((String)" override Breakpoint 10.5/" + WorkingNumberCounterArray[WorkingSwitchNumber] + "/255");
    }
     
   }
@@ -387,18 +388,18 @@ int OverrideRoutine(int WorkingStateIgnition, int WorkingStateButtonHigh, int Wo
     analogWrite(WorkingLEDlower, 255);
     LightOutputArray[WorkingSwitchNumber] = 255;
        if (debug == 1){
-    Serial.print((String)"Breakpoint 11/" + WorkingNumberCounterArray[WorkingSwitchNumber] + "/255");
+    Serial.print((String)" Override Breakpoint 11/" + WorkingNumberCounterArray[WorkingSwitchNumber] + "/255");
    }
   }
   else {
     analogWrite(WorkingLEDlower, 0);
     LightOutputArray[WorkingSwitchNumber] = 0;//this is what's causing the working output  to go bananas
       if (debug == 1){
-    Serial.print((String)"Breakpoint 12/" + WorkingNumberCounterArray[WorkingSwitchNumber] + "/0");
+    Serial.print((String)" Override Breakpoint 12/" + WorkingNumberCounterArray[WorkingSwitchNumber] + "/0");
    }
   }  
   if (debug == 1){
-    Serial.println((String)"Breakpoint 13/" + WorkingNumberCounterArray[WorkingSwitchNumber]);
+    Serial.println((String)" Override Breakpoint 13/" + WorkingNumberCounterArray[WorkingSwitchNumber]);
   }
 }
 
@@ -412,7 +413,7 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
    analogWrite(workingLEDupper, 0);
    analogWrite(workingLEDlower, 0);
    if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 1");
+    Serial.println((String)"Dashcam " + workingLightNumber + " breakpoint 1");
      }
    }
    else if (workingupper == LOW && workingStateLights == LOW && workingStateIgnition == HIGH) { //car on auto mode, no lights
@@ -420,7 +421,7 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
     analogWrite(workingLEDupper, 255);
     analogWrite(workingLEDlower, 0);
      if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 2");
+    Serial.println((String)"Dashcam " + workingLightNumber + " breakpoint 2");
      }
    }
    else if (workingupper == LOW && workingStateLights == HIGH && workingStateIgnition == HIGH) { //car on, lights on, auto mode
@@ -428,7 +429,7 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
     analogWrite(workingLEDupper, 255);
     analogWrite(workingLEDlower, midlightlevel);
      if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 3");
+    Serial.println((String)"Dashcam " + workingLightNumber + " breakpoint 3");
      }
    }
    else if (workingupper == HIGH && workinglower == HIGH && workingStateIgnition == HIGH) {//no orders no backlight
@@ -436,7 +437,7 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
     analogWrite(workingLEDupper, 0);
     analogWrite(workingLEDlower, 0);
       if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 3.5");
+    Serial.println((String)"Dashcam " + workingLightNumber + " breakpoint 3.5");
      }
    }
    else if (workingupper == HIGH && workinglower == HIGH && workingStateLights == HIGH && workingStateIgnition == HIGH) { //no orders, general backlight
@@ -444,17 +445,16 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
     analogWrite(workingLEDupper, midlightlevel);
     analogWrite(workingLEDlower, midlightlevel);
      if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 4");
+    Serial.println((String)"Dashcam " + workingLightNumber + " breakpoint 4");
      }
    }
    else if (workinglower == LOW && workingStateLights == LOW && workingStateIgnition == LOW) { //ignition off, no lights, commanded force on
-    int workingDashCamLowerOut;
     Timer(DashCamBlinkInterval, workingDashCamLowerOut, "Blink");
     digitalWrite(workingPower, DashCamOn);
     analogWrite(workingLEDlower, workingDashCamLowerOut);
     analogWrite(workingLEDupper, 0);
      if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 5");
+    Serial.println((String)"Dashcam " + workingLightNumber + " breakpoint 5");
      }
    }
    else if (workinglower == LOW && workingStateLights == LOW && workingStateIgnition == HIGH) { //ignition on, no lights, commanded force on, 
@@ -462,7 +462,7 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
     analogWrite(workingLEDlower, 255);
     analogWrite(workingLEDupper, 0);
      if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 5.5");
+    Serial.println((String)"Dashcam " + workingLightNumber + " breakpoint 5.5");
      }
    }
   else if (workinglower == LOW && workingStateLights == HIGH && workingStateIgnition == HIGH) { //force on, lights on 
@@ -470,7 +470,7 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
     analogWrite(workingLEDlower, 255);
     analogWrite(workingLEDupper, midlightlevel);
      if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 6");
+    Serial.println((String)"Dashcam " + workingLightNumber + " breakpoint 6");
      }
    }
   else if (workinglower == HIGH && workingupper == HIGH && workingStateIgnition == LOW) { //needed to clear the light state
@@ -478,7 +478,7 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
     analogWrite(workingLEDlower, 0);
     analogWrite(workingLEDupper, 0);
      if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 7");
+    Serial.println((String)"Dashcam " + workingLightNumber + " breakpoint 7");
      }
    }
   else if (workinglower == LOW && workingStateIgnition == HIGH && workingStateLights == LOW) { //needed to keep on in auto no lights
@@ -486,7 +486,7 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
     analogWrite(workingLEDlower, 255);
     analogWrite(workingLEDupper, 0);
      if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 8");
+    Serial.println((String)"Dashcam " + workingLightNumber + " breakpoint 8");
      }
    }
   else if (workinglower == LOW && workingStateIgnition == HIGH && workingStateLights == HIGH) {
@@ -494,7 +494,7 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
     analogWrite(workingLEDlower, 255);
     analogWrite(workingLEDupper, midlightlevel);
      if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 9");
+    Serial.println((String)"Dashcam " + workingLightNumber + " breakpoint 9");
      }
    }
   else if (workinglower == HIGH && workingStateIgnition == LOW && workingStateLights == LOW) {
@@ -502,7 +502,7 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
     analogWrite(workingLEDlower, 0);
     analogWrite(workingLEDupper, 0);
      if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 10");
+    Serial.println((String)"Dashcam " + workingLightNumber + " breakpoint 10");
      }
    }
   }
@@ -511,7 +511,7 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
   analogWrite(workingLEDupper, 0);
   analogWrite(workingLEDlower, 0);
    if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingLightNumber + "breakpoint 11");
+    Serial.println((String)"Dashcam " + workingLightNumber + " breakpoint 11");
      }
   }
 } //end dashcam subroutine
