@@ -68,22 +68,22 @@ unsigned long currentMillis = 0;
 
 //array and setup for the LED panel switchs
 //uppers
+int UpperLEDout0 = 0;
 int UpperLEDout1 = 0;
 int UpperLEDout2 = 0;
 int UpperLEDout3 = 0;
 int UpperLEDout4 = 0;
 int UpperLEDout5 = 0;
-int UpperLEDout6 = 0;
-int UpperLEDoutArray[] = {UpperLEDout1, UpperLEDout2, UpperLEDout3, UpperLEDout4, UpperLEDout5, UpperLEDout6};
+int UpperLEDoutArray[] = {UpperLEDout0, UpperLEDout1, UpperLEDout2, UpperLEDout3, UpperLEDout4, UpperLEDout5};
 
 //lowers
+int LowerLEDout0 = 0;
 int LowerLEDout1 = 0;
 int LowerLEDout2 = 0;
 int LowerLEDout3 = 0;
 int LowerLEDout4 = 0;
 int LowerLEDout5 = 0;
-int LowerLEDout6 = 0;
-int LowerLEDoutArray[] = {LowerLEDout1, LowerLEDout2, LowerLEDout3, LowerLEDout4, LowerLEDout5, LowerLEDout6};
+int LowerLEDoutArray[] = {LowerLEDout0, LowerLEDout1, LowerLEDout2, LowerLEDout3, LowerLEDout4, LowerLEDout5};
 
 
 //Override function variables
@@ -157,6 +157,8 @@ void setup() {
   pinMode(S4LEDupper, OUTPUT);
   pinMode(S5LEDlower, OUTPUT);
   pinMode(S5LEDupper, OUTPUT);
+  pinMode(S6LEDlower, OUTPUT);
+  pinMode(S6LEDupper, OUTPUT);
   //Switch inputs
   pinMode(S1lowerPin, INPUT);
   pinMode(S1upperPin, INPUT);
@@ -244,12 +246,11 @@ analogWrite(S5LEDupper, UpperLEDoutArray[4]);
 analogWrite(S6LEDupper, UpperLEDoutArray[5]);
 //lowers
 analogWrite(S1LEDlower, LowerLEDoutArray[0]);
-analogWrite(S1LEDlower, LowerLEDoutArray[1]);
-analogWrite(S1LEDlower, LowerLEDoutArray[2]);
-analogWrite(S1LEDlower, LowerLEDoutArray[3]);
-analogWrite(S1LEDlower, LowerLEDoutArray[4]);
-analogWrite(S1LEDlower, LowerLEDoutArray[5]);
-
+analogWrite(S2LEDlower, LowerLEDoutArray[1]);
+analogWrite(S3LEDlower, LowerLEDoutArray[2]);
+analogWrite(S4LEDlower, LowerLEDoutArray[3]);
+analogWrite(S5LEDlower, LowerLEDoutArray[4]);
+analogWrite(S6LEDlower, LowerLEDoutArray[5]);
 
 if (ignitionstate == HIGH) { //if the car is on, run the normal lighting procedure
     
@@ -284,7 +285,7 @@ if (ignitionstate == LOW) { //While the car is off run the following
 }
 
 //Run the dashcam logic, since we don't really care what state the car is in to do so
-   DashCamLogic(S4statelower, S4stateupper, S4LEDlower, S4LEDupper, ignitionstate, lightsstate, 4, DashCamPower); //single integer is WorkingLightNumber, should match the LEDs and Switches being used
+   DashCamLogic(S4statelower, S4stateupper, S4LEDlower, S4LEDupper, ignitionstate, lightsstate, 3, DashCamPower); //single integer is WorkingLightNumber, should match the LEDs and Switches being used
 
 //Serial read
 if(Serial1.available() > 0){ //if the port has data on the buffer then read it then send it out the diagnostic
@@ -341,8 +342,8 @@ serialsend(); //send the serial data
       if (debug == 1) {
       Serial.println((String)" Lights Breakpoint 5/" + workingLightNumber);
       }
-    UpperLEDoutArray[workingLightNumber] = 0;
-    LowerLEDoutArray[workingLightNumber] = 255;
+    UpperLEDoutArray[workingLightNumber] = 255;
+    LowerLEDoutArray[workingLightNumber] = 0;
     LightOutputArray[workingLightNumber] = 0;
   }//all off, no glow
   else if (workinglower == HIGH&&workingupper == HIGH&&workingStateLights == HIGH&&workingStateHighBeams == HIGH) {
@@ -357,25 +358,25 @@ serialsend(); //send the serial data
       if (debug == 1) {
       Serial.println((String)" Lighs Breakpoint 7/" + workingLightNumber);
       }
-    UpperLEDoutArray[workingLightNumber] = 255;
-    LowerLEDoutArray[workingLightNumber] = 0;
+    UpperLEDoutArray[workingLightNumber] = 0;
+    LowerLEDoutArray[workingLightNumber] = 255;
     LightOutputArray[workingLightNumber] = 255;
   }//High beams no glow on rest of panel
   else if (workinglower == LOW){
       if (debug == 1) {
       Serial.println((String)" Lights Breakpoint 8/" + workingLightNumber);
       }
-    UpperLEDoutArray[workingLightNumber] = 255;
-    LowerLEDoutArray[workingLightNumber] = midlightlevel;
+    UpperLEDoutArray[workingLightNumber] = midlightlevel;
+    LowerLEDoutArray[workingLightNumber] = 255;
     LightOutputArray[workingLightNumber] = 255;
   }//all off panel glowing
   else if (workinglower == HIGH&&workingupper == HIGH&&workingStateLights == HIGH&&workingStateHighBeams == LOW) {
-      if (debug == 1) {
-      Serial.println((String)" Lights Breakpoint 9/" + workingLightNumber);
-      }
     UpperLEDoutArray[workingLightNumber] = midlightlevel;
     LowerLEDoutArray[workingLightNumber] = midlightlevel;
     LightOutputArray[workingLightNumber] = 0;
+      if (debug == 1) {
+      Serial.println((String)" Lights Breakpoint 9/" + workingLightNumber);
+      }
   }
   else if (workinglower == HIGH&&workingupper == HIGH&&workingStateLights == LOW&&workingStateHighBeams == LOW) { //this line returns the system to zero state
   UpperLEDoutArray[workingLightNumber] = 0; //turn off the LEDs when we return to this state
@@ -451,18 +452,18 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
    }
    else if (workingupper == LOW && workingStateLights == LOW && workingStateIgnition == HIGH) { //car on auto mode, no lights
     digitalWrite(workingPower, DashCamOn);
-    LowerLEDoutArray[workingSwitchNumber] = 255;
-    UpperLEDoutArray[workingSwitchNumber] = 0; 
+    LowerLEDoutArray[workingSwitchNumber] = 0;
+    UpperLEDoutArray[workingSwitchNumber] = 255; 
      if (debug == 1) {
     Serial.println((String)"Dashcam " + workingSwitchNumber + " breakpoint 2");
      }
    }
    else if (workingupper == LOW && workingStateLights == HIGH && workingStateIgnition == HIGH) { //car on, lights on, auto mode
     digitalWrite(workingPower, DashCamOn);
-    LowerLEDoutArray[workingSwitchNumber] = 255;
-    UpperLEDoutArray[workingSwitchNumber] = midlightlevel;
+    LowerLEDoutArray[workingSwitchNumber] = midlightlevel;
+    UpperLEDoutArray[workingSwitchNumber] = 255;
      if (debug == 1) {
-    Serial.println((String)"Dashcam " + workingSwitchNumber + " breakpoint 3");
+    Serial.println((String)"Dashcam " + workingSwitchNumber + " breakpoint 3 // lower = " + LowerLEDoutArray[workingSwitchNumber] + "upper = " + UpperLEDoutArray[workingSwitchNumber]);
      }
    }
    else if (workingupper == HIGH && workinglower == HIGH && workingStateIgnition == HIGH) {//no orders no backlight
@@ -482,9 +483,20 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
      }
    }
    else if (workinglower == LOW && workingStateLights == LOW && workingStateIgnition == LOW) { //ignition off, no lights, commanded force on
-    int workingDashCamLowerOut = Timer(DashCamBlinkInterval, "Blink");
+    //int workingDashCamLowerOut = Timer(DashCamBlinkInterval, "Blink", 3, "Lower");
+    if(currentMillis - previousMillis >= DashCamBlinkInterval){
+      previousMillis = currentMillis;
+      Serial.println((String)workingSwitchNumber+ "array out = " + LowerLEDoutArray[workingSwitchNumber]);
+      if(LowerLEDoutArray[workingSwitchNumber] == 255) {
+      LowerLEDoutArray[workingSwitchNumber] = 0;
+      Serial.println((String)workingSwitchNumber+ "array out = " + LowerLEDoutArray[workingSwitchNumber]);
+      } else {
+      LowerLEDoutArray[workingSwitchNumber] = 255;
+      Serial.println((String)workingSwitchNumber+ "//array out = " + LowerLEDoutArray[workingSwitchNumber]);
+      }
+    }
     digitalWrite(workingPower, DashCamOn);
-    LowerLEDoutArray[workingSwitchNumber] = workingDashCamLowerOut; //seemingly no need for this since were using the timer
+    //LowerLEDoutArray[workingSwitchNumber] = 255; //seemingly no need for this since were using the timer
     UpperLEDoutArray[workingSwitchNumber] = 0;
      if (debug == 1) {
     Serial.println((String)"Dashcam " + workingSwitchNumber + " breakpoint 5");
@@ -577,29 +589,23 @@ void serialsend()  { //send the outgoing serial data
   Serial1.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/" + voltage + "/" + ignitionstate + "/" + lightsstate + "/" + highbeamsstate + "/" + LightOutputArray[0] + "/" + LightOutputArray[1] + "/" + LightOutputArray[2] + "/" + LightOutputArray[3] + "/" + LightOutputArray[4] + "/" + LightOutputArray[5] + "/");
 }
 
-int Timer(long workingInterval, String workingType) { //Timer subrouting for blinking and powerdown-timers
+int Timer(int workingInterval, String workingType, int workingSwitchNumber, String workingSwitchSide) { //Timer subrouting for blinking and powerdown-timers
   int workingOutput;
-  if (currentMillis - previousMillis >= workingInterval) {
+ // if (currentMillis - previousMillis >= workingInterval) {
     previousMillis = currentMillis;
-    if (workingType == "Blink") { //Blinking code
-      if (workingOutput == 1) {
-        workingOutput = HIGH;
-        return workingOutput;
-        Serial.println((String)"Timer debug 1");
-        }
-        else {
-          workingOutput = LOW;
-          return workingOutput;
-          Serial.println((String)"Timer debug 2");
-        }
-      }
+    if (workingSwitchSide == "Lower" && workingType == "Blink"){
+          LowerLEDoutArray[workingSwitchNumber] = 1;
+          Serial.println((String)"Timer debug 1 // " + LowerLEDoutArray[workingSwitchNumber] + workingSwitchNumber);
+       }
+     // }
+    
     if (workingType == "Shutdown") {
-      workingOutput = 0;
-      return workingOutput;
+      //workingSwitchSide[workingSwitchNumber] = 0;
       Serial.println((String)"Timer debug 3");
+  
       }
-    }
-  }
+      
+}
 
 
 
