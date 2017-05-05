@@ -68,22 +68,22 @@ unsigned long currentMillis = 0;
 
 //array and setup for the LED panel switchs
 //uppers
-int UpperLEDout0 = 0;
-int UpperLEDout1 = 0;
-int UpperLEDout2 = 0;
-int UpperLEDout3 = 0;
-int UpperLEDout4 = 0;
-int UpperLEDout5 = 0;
-int UpperLEDoutArray[] = {UpperLEDout0, UpperLEDout1, UpperLEDout2, UpperLEDout3, UpperLEDout4, UpperLEDout5};
+//int UpperLEDout0 = 0;
+//int UpperLEDout1 = 0;
+//int UpperLEDout2 = 0;
+//int UpperLEDout3 = 0;
+//int UpperLEDout4 = 0;
+//int UpperLEDout5 = 0;
+int UpperLEDoutArray[] = {0, 0, 0, 0, 0, 0};
 
 //lowers
-int LowerLEDout0 = 0;
-int LowerLEDout1 = 0;
-int LowerLEDout2 = 0;
-int LowerLEDout3 = 0;
-int LowerLEDout4 = 0;
-int LowerLEDout5 = 0;
-int LowerLEDoutArray[] = {LowerLEDout0, LowerLEDout1, LowerLEDout2, LowerLEDout3, LowerLEDout4, LowerLEDout5};
+//int LowerLEDout0 = 0;
+//int LowerLEDout1 = 0;
+//int LowerLEDout2 = 0;
+//int LowerLEDout3 = 0;
+//int LowerLEDout4 = 0;
+//int LowerLEDout5 = 0;
+int LowerLEDoutArray[] = {0, 0, 0, 0, 0, 0};
 
 
 //Override function variables
@@ -466,7 +466,7 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
     Serial.println((String)"Dashcam " + workingSwitchNumber + " breakpoint 3 // lower = " + LowerLEDoutArray[workingSwitchNumber] + "upper = " + UpperLEDoutArray[workingSwitchNumber]);
      }
    }
-   else if (workingupper == HIGH && workinglower == HIGH && workingStateIgnition == HIGH) {//no orders no backlight
+   else if (workingupper == HIGH && workinglower == HIGH && workingStateIgnition == HIGH && workingStateLights == LOW) {//no orders no backlight
     digitalWrite(workingPower, DashCamOff);
     LowerLEDoutArray[workingSwitchNumber] = 0;
     UpperLEDoutArray[workingSwitchNumber] = 0;
@@ -474,7 +474,7 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
     Serial.println((String)"Dashcam " + workingSwitchNumber + " breakpoint 3.5");
      }
    }
-   else if (workingupper == HIGH && workinglower == HIGH && workingStateLights == HIGH && workingStateIgnition == HIGH) { //no orders, general backlight
+   else if (workingupper == HIGH && workinglower == HIGH && workingStateLights == HIGH) { //no orders, general backlight
     digitalWrite(workingPower, DashCamOff);
     LowerLEDoutArray[workingSwitchNumber] = midlightlevel;
     UpperLEDoutArray[workingSwitchNumber] = midlightlevel;
