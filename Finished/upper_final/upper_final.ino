@@ -130,7 +130,7 @@ int DashCamPower = 8;
 int DashCamDropoutVoltage = 1145;
 int DashCamOn = 1; //assign these to change the on off ports on the dashcam
 int DashCamOff = 0;
-int DashCamBlinkInterval = 1000; //Dashcam override blink interval
+int DashCamBlinkInterval = 250; //Dashcam override blink interval
 
 //Normal on/off function array variables
 int LightOutput1 = 0;
@@ -483,18 +483,8 @@ int DashCamLogic(int workinglower, int workingupper, int workingLEDlower, int wo
      }
    }
    else if (workinglower == LOW && workingStateLights == LOW && workingStateIgnition == LOW) { //ignition off, no lights, commanded force on
-    //int workingDashCamLowerOut = Timer(DashCamBlinkInterval, "Blink", 3, "Lower");
-    if(currentMillis - previousMillis >= DashCamBlinkInterval){
-      previousMillis = currentMillis;
-      Serial.println((String)workingSwitchNumber+ "array out = " + LowerLEDoutArray[workingSwitchNumber]);
-      if(LowerLEDoutArray[workingSwitchNumber] == 255) {
-      LowerLEDoutArray[workingSwitchNumber] = 0;
-      Serial.println((String)workingSwitchNumber+ "array out = " + LowerLEDoutArray[workingSwitchNumber]);
-      } else {
-      LowerLEDoutArray[workingSwitchNumber] = 255;
-      Serial.println((String)workingSwitchNumber+ "//array out = " + LowerLEDoutArray[workingSwitchNumber]);
-      }
-    }
+    //void Timer2 (int workingInterval, int workingSwitchNumber, String workingSwitchChoice)
+    Timer2 (DashCamBlinkInterval, workingSwitchNumber, "Lower");
     digitalWrite(workingPower, DashCamOn);
     //LowerLEDoutArray[workingSwitchNumber] = 255; //seemingly no need for this since were using the timer
     UpperLEDoutArray[workingSwitchNumber] = 0;
@@ -589,7 +579,7 @@ void serialsend()  { //send the outgoing serial data
   Serial1.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/" + voltage + "/" + ignitionstate + "/" + lightsstate + "/" + highbeamsstate + "/" + LightOutputArray[0] + "/" + LightOutputArray[1] + "/" + LightOutputArray[2] + "/" + LightOutputArray[3] + "/" + LightOutputArray[4] + "/" + LightOutputArray[5] + "/");
 }
 
-int Timer(int workingInterval, String workingType, int workingSwitchNumber, String workingSwitchSide) { //Timer subrouting for blinking and powerdown-timers
+/*int Timer(int workingInterval, String workingType, int workingSwitchNumber, String workingSwitchSide) { //Timer subrouting for blinking and powerdown-timers
   int workingOutput;
  // if (currentMillis - previousMillis >= workingInterval) {
     previousMillis = currentMillis;
@@ -605,7 +595,20 @@ int Timer(int workingInterval, String workingType, int workingSwitchNumber, Stri
   
       }
       
-}
+}*/
 
+void Timer2 (int workingInterval, int workingSwitchNumber, String workingSwitchChoice) {
+    if(currentMillis - previousMillis >= workingInterval){
+    previousMillis = currentMillis;
+    Serial.println((String)workingSwitchNumber+ "array out = " + LowerLEDoutArray[workingSwitchNumber]);
+      if(LowerLEDoutArray[workingSwitchNumber] == 255) {
+      LowerLEDoutArray[workingSwitchNumber] = 0;
+      Serial.println((String)workingSwitchNumber+ "array out = " + LowerLEDoutArray[workingSwitchNumber]);
+      } else {
+      LowerLEDoutArray[workingSwitchNumber] = 255;
+      Serial.println((String)workingSwitchNumber+ "//array out = " + LowerLEDoutArray[workingSwitchNumber]);
+      }
+    }
+}
 
 
