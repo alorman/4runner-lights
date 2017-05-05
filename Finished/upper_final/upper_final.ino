@@ -68,52 +68,19 @@ unsigned long currentMillis = 0;
 
 //array and setup for the LED panel switchs
 //uppers
-//int UpperLEDout0 = 0;
-//int UpperLEDout1 = 0;
-//int UpperLEDout2 = 0;
-//int UpperLEDout3 = 0;
-//int UpperLEDout4 = 0;
-//int UpperLEDout5 = 0;
+
 int UpperLEDoutArray[] = {0, 0, 0, 0, 0, 0};
 
 //lowers
-//int LowerLEDout0 = 0;
-//int LowerLEDout1 = 0;
-//int LowerLEDout2 = 0;
-//int LowerLEDout3 = 0;
-//int LowerLEDout4 = 0;
-//int LowerLEDout5 = 0;
+
 int LowerLEDoutArray[] = {0, 0, 0, 0, 0, 0};
 
 
 //Override function variables
-int WorkingPreviousOverrideState1 = 0;//will work as global  variable -- need not be a static
-int WorkingPreviousOverrideState2 = 0;
-int WorkingPreviousOverrideState3 = 0;
-int WorkingPreviousOverrideState4 = 0;
-int WorkingPreviousOverrideState5 = 0;
-int WorkingPreviousOverrideState6 = 0;
-
-//working override counters
-int WorkingOverrideCount1 = 0;
-int WorkingOverrideCount2 = 0;
-int WorkingOverrideCount3 = 0;
-int WorkingOverrideCount4 = 0;
-int WorkingOverrideCount5 = 0;
-int WorkingOverrideCount6 = 0;
-
-// working number counters
-int WorkingNumberCounter1 = 1;
-int WorkingNumberCounter2 = 2;
-int WorkingNumberCounter3 = 3;
-int WorkingNumberCounter4 = 4; 
-int WorkingNumberCounter5 = 5; 
-int WorkingNumberCounter6 = 6; 
-
 //declare the various arrays needed for override globally
-int static WorkingCounterArray[] = {WorkingOverrideCount1, WorkingOverrideCount2, WorkingOverrideCount3, WorkingOverrideCount4, WorkingOverrideCount5, WorkingOverrideCount6};
-int static PreviousNameArray[] = {WorkingPreviousOverrideState1, WorkingPreviousOverrideState2, WorkingPreviousOverrideState3, WorkingPreviousOverrideState4, WorkingPreviousOverrideState5, WorkingPreviousOverrideState6};
-int static WorkingNumberCounterArray[] = {WorkingNumberCounter1, WorkingNumberCounter2, WorkingNumberCounter3, WorkingNumberCounter4, WorkingNumberCounter5, WorkingNumberCounter6};
+int static WorkingCounterArray[] = {0, 0, 0, 0, 0, 0};
+int static PreviousNameArray[] = {0, 0, 0, 0, 0, 0};
+int static WorkingNumberCounterArray[] = {0, 0, 0, 0, 0, 0};
 
 //output vars
 int ledpin = 13;
@@ -133,13 +100,7 @@ int DashCamOff = 0;
 int DashCamBlinkInterval = 250; //Dashcam override blink interval
 
 //Normal on/off function array variables
-int LightOutput1 = 0;
-int LightOutput2 = 0;
-int LightOutput3 = 0;
-int LightOutput4 = 0;
-int LightOutput5 = 0;
-int LightOutput6 = 0;
-int LightOutputArray[] = {LightOutput1, LightOutput2, LightOutput3, LightOutput4, LightOutput5, LightOutput6};
+int LightOutputArray[] = {0, 0, 0, 0, 0, 0};
 
 
 void setup() {
@@ -193,20 +154,20 @@ void setup() {
   int LightNumber6 = 6;
 
   //resulting variables (for light bars)(and declare them as zero so that they don't do random things)
-  int lightbar1out = 0;
-  int lightbar2out = 0;
-  int lightbar3out = 0;
-  int lightbar4out = 0;
-  int lightbar5out = 0;
-  int lightbar6out = 0;
+  //int lightbar1out = 0;
+  //int lightbar2out = 0;
+  //int lightbar3out = 0;
+  //int lightbar4out = 0;
+  //int lightbar5out = 0;
+  //int lightbar6out = 0;
   
   //Override function variables (and declare them as zero so that they don't do random things)
-  int Override1 = 0;
-  int Override2 = 0;
-  int Override3 = 0;
-  int Override4 = 0;
-  int Override5 = 0;
-  int Override6 = 0;
+  //int Override1 = 0;
+  //int Override2 = 0;
+  //int Override3 = 0;
+  //int Override4 = 0;
+  //int Override5 = 0;
+  //int Override6 = 0;
   
  //Setup the serial driver and diagnostic
  //pinMode(ledpin, OUTPUT);
@@ -255,8 +216,8 @@ analogWrite(S6LEDlower, LowerLEDoutArray[5]);
 if (ignitionstate == HIGH) { //if the car is on, run the normal lighting procedure
     
     //Call the main light controls for 1 and 2
-    lightbar1out = LightLogicFunction(S1statelower, S1stateupper, S1LEDlower, S1LEDupper, lightsstate, highbeamsstate, ignitionstate, 0, lightbar1out);//call ofthe actual function
-    //lightbar2out = LightLogicFunction(S2statelower, S2stateupper, S2LEDlower, S2LEDupper, lightsstate, highbeamsstate, ignitionstate, 1, lightbar2out);//call ofthe actual function
+    LightLogicFunction(S1statelower, S1stateupper, S1LEDlower, S1LEDupper, lightsstate, highbeamsstate, ignitionstate, 0, lightbar1out);//call ofthe actual function
+    //LightLogicFunction(S2statelower, S2stateupper, S2LEDlower, S2LEDupper, lightsstate, highbeamsstate, ignitionstate, 1, lightbar2out);//call ofthe actual function
     
     //reset the counters to zero for the override tables
     WorkingCounterArray[0] = 0;
@@ -275,8 +236,8 @@ if (ignitionstate == HIGH) { //if the car is on, run the normal lighting procedu
     }
     
 if (ignitionstate == LOW) { //While the car is off run the following 
-    Override1 = OverrideRoutine(ignitionstate, S1statelower, S1LEDlower, LightOutputArray[0], 0);
-   // Override2 = OverrideRoutine(ignitionstate, S2statelower, S2LEDlower, lightbar2out, 1);
+    OverrideRoutine(ignitionstate, S1statelower, S1LEDlower, LightOutputArray[0], 0);
+   //OverrideRoutine(ignitionstate, S2statelower, S2LEDlower, lightbar2out, 1);
     
     if(debug == 1){
       Serial.println("debug 0.8");
@@ -303,7 +264,7 @@ serialsend(); //send the serial data
 //Writing directly the variables for the driver, rather than doing an analogWrite. Doing analogWrite for the display LEDS
 //UPPER = AUTO and LOWER = HIGH BEAMS
 // HIGH and LOW are REVERSED!!! (on input switches)
-  int LightLogicFunction(int workinglower, int workingupper, int workingLEDlower, int workingLEDupper, int workingStateLights, int workingStateHighBeams, int workingIgnitionInput, int workingLightNumber, int workingoutput){
+  void LightLogicFunction(int workinglower, int workingupper, int workingLEDlower, int workingLEDupper, int workingStateLights, int workingStateHighBeams, int workingIgnitionInput, int workingLightNumber, int workingoutput){
     //define the array of the output names before we get too far
     //start the main loop
     if (workingupper == LOW && workinglower == LOW) {
@@ -399,7 +360,7 @@ serialsend(); //send the serial data
 
 //Override logic block 
 
-int OverrideRoutine(int WorkingStateIgnition, int WorkingStateButtonHigh, int WorkingLEDlower, int WorkingOutput, int WorkingSwitchNumber) {
+void OverrideRoutine(int WorkingStateIgnition, int WorkingStateButtonHigh, int WorkingLEDlower, int WorkingOutput, int WorkingSwitchNumber) {
   //tables are established in global variables
   //check for state change from last time
   if (WorkingStateButtonHigh != PreviousNameArray[WorkingSwitchNumber]&&WorkingStateIgnition == LOW) { //increments the value in the counter array on change detection
