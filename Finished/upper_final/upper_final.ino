@@ -281,7 +281,7 @@ serialsend(); //send the serial data
     LightOutputArray[workingLightNumber] = midLEDoutlevel;
     }
     //Auto LEDs but with lights but no hight beams
-  else if (workingupper == LOW & &workingStateLights == HIGH && workingStateHighBeams == HIGH) {
+  else if (workingupper == LOW && workingStateLights == HIGH && workingStateHighBeams == HIGH) {
       if (debug == 1) {
       Serial.println((String)" Light Breakpoint 3/" + workingLightNumber);
       }
