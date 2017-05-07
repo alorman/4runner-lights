@@ -6,7 +6,16 @@ int debug = 1; //change to 1 to debug over serial
 //Set the mid level light in resulting things
 int midlightlevel = 50;
 int midLEDoutlevel = 75;
-int LEDBlinkInterval = 250; //lower switch output blink for the main lights
+int LEDBlinkInterval = 500; //lower switch output blink for the main lights
+
+//The dashcam variables
+//int DashcamPin = 12;
+int DashCamPower = 8;
+int DashCamDropoutVoltage = 1145;
+int DashCamOn = 1; //assign these to change the on off ports on the dashcam
+int DashCamOff = 0;
+int DashCamBlinkInterval = 500; //Dashcam override blink interval
+int DashCamKeepAliveInterval = 2000; //Dashcam Postflow time
 
 //Override options (how many switch toggles are required  to override)
 int OverrideNumber = 5; //should always be an odd number
@@ -90,15 +99,6 @@ int lightbar2out = 0;
 //Override function variables (and declare them as zero so that they don't do random things)
 int Override1 = 0;
 int Override2 = 0;
-
-//The dashcam variables
-//int DashcamPin = 12;
-int DashCamPower = 8;
-int DashCamDropoutVoltage = 1145;
-int DashCamOn = 1; //assign these to change the on off ports on the dashcam
-int DashCamOff = 0;
-int DashCamBlinkInterval = 500; //Dashcam override blink interval
-int DashCamKeepAliveInterval = 2000; //Dashcam Postflow time
 
 //Normal on/off function array variables
 int LightOutputArray[] = {0, 0, 0, 0, 0, 0};
