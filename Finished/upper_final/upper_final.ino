@@ -305,7 +305,7 @@ serialsend(); //send the serial data
     LowerLEDoutArray[workingLightNumber] = 0;
     LightOutputArray[workingLightNumber] = 0;
   }//all off, no glow
-  else if (workingupper == HIGH && workinglower == HIGH && workingStateLights == HIGH && workingStateHighBeams == HIGH) {
+  else if (workinglower == HIGH && workingupper == HIGH && workingStateLights == HIGH && workingStateHighBeams == HIGH) {
       if (debug == 1) {
       Serial.println((String)" Lights Breakpoint 6/" + workingLightNumber);
       }
