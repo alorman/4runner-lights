@@ -6,6 +6,7 @@ int debug = 1; //change to 1 to debug over serial
 //Set the mid level light in resulting things
 int midlightlevel = 50;
 int midLEDoutlevel = 75;
+int LEDBlinkInterval = 250; //lower switch output blink for the main lights
 
 //Override options (how many switch toggles are required  to override)
 int OverrideNumber = 5; //should always be an odd number
@@ -21,28 +22,28 @@ String mastername = "Lower";
 //end vars needed for serial driver
 
 //LED Outputs
-int S1LEDlower = 48; //testing values
-int S1LEDupper = 49;
+int S1LEDlower = 10; //testing values
+int S1LEDupper = 9;
 int S2LEDlower = 51;//testing from here out not used
 int S2LEDupper = 52;
 int S3LEDlower = 53;
 int S3LEDupper = 54;
-int S4LEDlower = 10; //assign to dashcam for testing
-int S4LEDupper = 9;  //assign to dashcam for testing
+int S4LEDlower = 55; //assign to dashcam for testing
+int S4LEDupper = 56;  //assign to dashcam for testing
 int S5LEDlower = 57;
 int S5LEDupper = 58;
 int S6LEDlower = 59;
 int S6LEDupper = 599;
 
 // Switch inputs
-int S1lowerPin = 59;
-int S1upperPin = 60;
+int S1lowerPin = 4;
+int S1upperPin = 3;
 int S2lowerPin = 61;//testing not used below
 int S2upperPin = 62;
 int S3lowerPin = 63;
 int S3upperPin = 64;
-int S4lowerPin = 4; //dashcam testing
-int S4upperPin = 3;  //dashcam testing
+int S4lowerPin = 65; //dashcam testing
+int S4upperPin = 66;  //dashcam testing
 int S5lowerPin = 67;
 int S5upperPin = 68;
 int S6lowerPin = 69;
@@ -236,6 +237,14 @@ if (ignitionstate == HIGH) { //if the car is on, run the normal lighting procedu
 if (ignitionstate == LOW) { //While the car is off run the following 
     OverrideRoutine(ignitionstate, S1statelower, S1LEDlower, LightOutputArray[0], 0);
    //OverrideRoutine(ignitionstate, S2statelower, S2LEDlower, lightbar2out, 1);
+
+    //shutdown the lights that might have stayed on
+    UpperLEDoutArray[0] = 0;
+    UpperLEDoutArray[1] = 0;
+    UpperLEDoutArray[2] = 0;
+    UpperLEDoutArray[3] = 0;
+    UpperLEDoutArray[4] = 0;
+    UpperLEDoutArray[5] = 0;
     
     if(debug == 1){
       Serial.println("debug 0.8");
@@ -264,15 +273,9 @@ serialsend(); //send the serial data
 // HIGH and LOW are REVERSED!!! (on input switches)
   void LightLogicFunction(int workinglower, int workingupper, int workingLEDlower, int workingLEDupper, int workingStateLights, int workingStateHighBeams, int workingIgnitionInput, int workingLightNumber, int workingoutput){
     //define the array of the output names before we get too far
-    //start the main loop
-    if (workingupper == LOW && workinglower == LOW) {
-      if (debug == 1) {
-        Serial.println((String)" Lights Breakpoint 1/" + workingLightNumber);
-        //  Serial.println(workinglower);
-      }
-  }   
+    //start the main loop 
   //check to see if we're in auto then check to see about lights, if yes, then high beams
-  else if (workingupper == LOW && workingStateLights == HIGH && workingStateHighBeams == LOW) {
+   if (workingupper == LOW && workingStateLights == HIGH && workingStateHighBeams == LOW) {
       if (debug == 1) {
       Serial.println((String)" Light Breakpoint 2/" + workingLightNumber);
       }
@@ -344,6 +347,8 @@ serialsend(); //send the serial data
   if (debug == 1){
     Serial.println((String)" Lights Breakpoint 9.5/" + workingLightNumber);
   }
+  //else if (workinglower == HIGH && workingupper == HIGH && workingStateIgnition
+  //}
   else if (workinglower == HIGH && workingupper == LOW && workingStateLights == LOW && workingStateHighBeams == LOW) { //possibly redudent, this should proably be all converted to tables
     UpperLEDoutArray[workingLightNumber] = 0;
     LowerLEDoutArray[workingLightNumber] = 0;
@@ -369,7 +374,7 @@ void OverrideRoutine(int WorkingStateIgnition, int WorkingStateButtonHigh, int W
         PreviousNameArray[WorkingSwitchNumber] = WorkingStateButtonHigh;//same
   }
     if (WorkingCounterArray[WorkingSwitchNumber] >= OverrideNumber&&WorkingStateButtonHigh == LOW && WorkingStateIgnition == LOW) {
-    LowerLEDoutArray[WorkingSwitchNumber] = 255; 
+    TimerCall (LEDBlinkInterval, WorkingSwitchNumber, "Lower"); //calling timer instead of directly writing to the array 
     LightOutputArray[WorkingSwitchNumber] = 255;
    if (debug == 1){
     Serial.print((String)" override Breakpoint 10.5/" + WorkingNumberCounterArray[WorkingSwitchNumber] + "/255");
@@ -391,9 +396,6 @@ void OverrideRoutine(int WorkingStateIgnition, int WorkingStateButtonHigh, int W
     Serial.print((String)" Override Breakpoint 12/" + WorkingNumberCounterArray[WorkingSwitchNumber] + "/0");
    }
   }  
-  if (debug == 1){
-    Serial.println((String)" Override Breakpoint 13/" + WorkingNumberCounterArray[WorkingSwitchNumber]);
-  }
 }
 
 //Dashcam logic block
