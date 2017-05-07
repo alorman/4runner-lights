@@ -13,9 +13,9 @@ int OverrideNumber = 5; //should always be an odd number
 
 //serial vars
 int voltage = 0;
-int lightsstate = 0;
-int ignitionstate = 0;
-int highbeamsstate = 0;
+int LightsState = 0;
+int IgnitionState = 0;
+int HighBeamsState = 0;
 int systemtime;
 String unitname = "Upper";
 String mastername = "Lower";
@@ -206,11 +206,11 @@ analogWrite(S6LEDlower, LowerLEDoutArray[5]);
 digitalWrite(DashCamPower, DashCamOutputArray[0]);
 
 
-if (ignitionstate == HIGH) { //if the car is on, run the normal lighting procedure
+if (IgnitionState == HIGH) { //if the car is on, run the normal lighting procedure
     
     //Call the main light controls for 1 and 2
-    LightLogicFunction(S1statelower, S1stateupper, S1LEDlower, S1LEDupper, lightsstate, highbeamsstate, ignitionstate, 0, lightbar1out);//call ofthe actual function
-    //LightLogicFunction(S2statelower, S2stateupper, S2LEDlower, S2LEDupper, lightsstate, highbeamsstate, ignitionstate, 1, lightbar2out);//call ofthe actual function
+    LightLogicFunction(S1statelower, S1stateupper, S1LEDlower, S1LEDupper, LightsState, HighBeamsState, IgnitionState, 0);//call ofthe actual function
+    //LightLogicFunction(S2statelower, S2stateupper, S2LEDlower, S2LEDupper, LightsState, HighBeamsState, IgnitionState, 1);//call ofthe actual function
     
     //reset the counters to zero for the override tables
     //Probably best to comment out the switch being used for the dashcam so it doesn't have weird behavior
@@ -234,9 +234,9 @@ if (ignitionstate == HIGH) { //if the car is on, run the normal lighting procedu
       Serial.println("debug 0.75");
     }
     
-if (ignitionstate == LOW) { //While the car is off run the following 
-    OverrideRoutine(ignitionstate, S1statelower, S1LEDlower, LightOutputArray[0], 0);
-   //OverrideRoutine(ignitionstate, S2statelower, S2LEDlower, lightbar2out, 1);
+if (IgnitionState == LOW) { //While the car is off run the following 
+    OverrideRoutine(IgnitionState, S1statelower, S1LEDlower, LightOutputArray[0], 0);
+   //OverrideRoutine(IgnitionState, S2statelower, S2LEDlower, lightbar2out, 1);
 
     //shutdown the lights that might have stayed on
     UpperLEDoutArray[0] = 0;
@@ -253,7 +253,7 @@ if (ignitionstate == LOW) { //While the car is off run the following
 }
 
 //Run the dashcam logic, since we don't really care what state the car is in to do so
-   DashCamLogic(S4statelower, S4stateupper, S4LEDlower, S4LEDupper, ignitionstate, lightsstate, 3, 0); //single integer is WorkingLightNumber, should match the LEDs and Switches being used
+   DashCamLogic(S4statelower, S4stateupper, S4LEDlower, S4LEDupper, IgnitionState, LightsState, 3, 0); //single integer is WorkingLightNumber, should match the LEDs and Switches being used
 
 //Serial read
 if(Serial1.available() > 0){ //if the port has data on the buffer then read it then send it out the diagnostic
@@ -271,7 +271,7 @@ serialsend(); //send the serial data
 //Writing directly the variables for the driver, rather than doing an analogWrite. Doing analogWrite for the display LEDS
 //UPPER = AUTO and LOWER = HIGH BEAMS
 // HIGH and LOW are REVERSED!!! (on input switches)
-  void LightLogicFunction(int workinglower, int workingupper, int workingLEDlower, int workingLEDupper, int workingStateLights, int workingStateHighBeams, int workingIgnitionInput, int workingLightNumber, int workingoutput){
+  void LightLogicFunction(int workinglower, int workingupper, int workingLEDlower, int workingLEDupper, int workingStateLights, int workingStateHighBeams, int workingStateIgnition, int workingLightNumber){
     //define the array of the output names before we get too far
     //start the main loop 
   //check to see if we're in auto then check to see about lights, if yes, then high beams
@@ -530,16 +530,16 @@ void serialread() { //serial read function. Use this area to adjust what gets li
   String tempch6 = Serial1.readStringUntil('/');
   voltage = tempvoltage.toInt(); //voltage remains x100
   //systemtime = tempsystemtime.toInt();
-  ignitionstate = tempignition.toInt();
-  lightsstate = templights.toInt();
-  highbeamsstate = temphighbeams.toInt();
+  IgnitionState = tempignition.toInt();
+  LightsState = templights.toInt();
+  HighBeamsState = temphighbeams.toInt();
 }
 void serialdiagnostic() { //diagnostic readout for USB serial port
-  Serial.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "//1//" + previousMillis2 + "//2//" + currentMillis + "/V" + voltage + "/I" + ignitionstate + "/L" + lightsstate + "/H" + highbeamsstate + "/CH1" + LightOutputArray[0] + "/CH2" + LightOutputArray[1] + "/CH3" + LightOutputArray[2] + "/CH4" + LightOutputArray[3] + "/CH5" + LightOutputArray[4] + "/CH6" + LightOutputArray[5] + "/");
+  Serial.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "//1//" + previousMillis2 + "//2//" + currentMillis + "/V" + voltage + "/I" + IgnitionState + "/L" + LightsState + "/H" + HighBeamsState + "/CH1" + LightOutputArray[0] + "/CH2" + LightOutputArray[1] + "/CH3" + LightOutputArray[2] + "/CH4" + LightOutputArray[3] + "/CH5" + LightOutputArray[4] + "/CH6" + LightOutputArray[5] + "/");
   }
 
 void serialsend()  { //send the outgoing serial data
-  Serial1.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/" + voltage + "/" + ignitionstate + "/" + lightsstate + "/" + highbeamsstate + "/" + LightOutputArray[0] + "/" + LightOutputArray[1] + "/" + LightOutputArray[2] + "/" + LightOutputArray[3] + "/" + LightOutputArray[4] + "/" + LightOutputArray[5] + "/");
+  Serial1.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/" + voltage + "/" + IgnitionState + "/" + LightsState + "/" + HighBeamsState + "/" + LightOutputArray[0] + "/" + LightOutputArray[1] + "/" + LightOutputArray[2] + "/" + LightOutputArray[3] + "/" + LightOutputArray[4] + "/" + LightOutputArray[5] + "/");
 }
 
 void TimerCall (int workingInterval, int workingSwitchNumber, String workingSwitchChoice) {
