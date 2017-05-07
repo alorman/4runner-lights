@@ -15,7 +15,7 @@ int DashCamDropoutVoltage = 1145;
 int DashCamOn = 1; //assign these to change the on off ports on the dashcam
 int DashCamOff = 0;
 int DashCamBlinkInterval = 500; //Dashcam override blink interval
-int DashCamKeepAliveInterval = 2000; //Dashcam Postflow time
+int DashCamKeepAliveInterval = 60000; //Dashcam Postflow time
 
 //Override options (how many switch toggles are required  to override)
 int OverrideNumber = 5; //should always be an odd number
