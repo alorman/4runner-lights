@@ -9,8 +9,9 @@ int fanconnected = 0; //set to 1 for fan present, 0 for fan not connectioned
 
 //serial vars
 int voltage = 0;
-int lightsstate = 0;
-int ignitionstate = 0;
+float voltagefloat = 0.00;
+int lightsstate = 1;
+int ignitionstate = 1; 
 int highbeamsstate = 0;
 int ch1state = 0;
 int ch2state = 0;
@@ -24,24 +25,24 @@ String mastername = "Upper";
 //end vars needed for serial
 
 //output vars
-int ch1pin = 10; //most likely would be 6 
+int ch1pin = 50; //most likely would be 6 
 int ch2pin = 51; //testing pins not used
-int ch3pin = 52;
+int ch3pin = 5;
 int ch4pin = 53;
 int ch5pin = 54;
 int ch6pin = 55;
 
 //fan pin
-int fanpin = 56; //not used in testing
+int fanpin = 11; //not used in testing
 int fanstate = 0;
 float fanstarttemp = 100;
 
 //input sensing vars
-int ignitionpin = 17; 
+int ignitionpin = 15; 
 int lightspin = 16;
-int highbeamspin = 15;
-int voltagepin = A0;
-int tempsensepin = 18;
+int highbeamspin = 17;
+int voltagepin = A4;
+int tempsensepin = A0;
 float tempF = 0;
 int tempsenseraw = 0;
 
@@ -68,17 +69,22 @@ pinMode(fanpin, OUTPUT);
 Serial.begin(9600);
 Serial1.begin(9600);
 delay(1000);
-Serial.println("setup complete...");
+Serial.println("Serial setup complete...");
 }
 
 //////////////////main loop
 void loop() {
 //systemtime ++;
 //read the actual sensors in here
-lightsstate = digitalRead(lightspin);
-ignitionstate = digitalRead(ignitionpin);
-highbeamsstate = digitalRead(highbeamspin);
-voltage = analogRead(voltagepin) * 1.75; //voltage multiplier here
+//lightsstate = digitalRead(lightspin);
+//ignitionstate = digitalRead(ignitionpin);
+//highbeamsstate = digitalRead(highbeamspin);
+//voltage = analogRead(voltagepin) * 1.75; //voltage multiplier here
+if(debug == 1){
+Serial.println("Analog Reading...");
+}
+
+voltageread();
 
 //write out the desired outputs
 analogWrite(ch1pin, ch1state); //and write it
@@ -88,36 +94,44 @@ analogWrite(ch3pin, ch3state);
 analogWrite(ch4pin, ch4state);
 analogWrite(ch5pin, ch5state);
 analogWrite(ch6pin, ch6state);
+if(debug == 1) {
+Serial.println("Analog Writing...");
+}
 
 //read the temp only if there's some output going on. Saves on cycles
 if(ch1state != 0 || ch2state != 0 || ch3state != 0 || ch4state != 0 || ch5state != 0 || ch6state != 0 || debug == 1){
 tempread();
+if(debug == 1) {
+  //  Serial.println("Fan logic activated");
+  }
   // fan logic
   if(fanconnected == 1) {
    if(tempF >= fanstarttemp) {
-    fanstate = 1;
-   }
-   else {
+    fanstate = 255;
+    if(debug == 1) {
+      Serial.println("Fan On");
+      }
+   }else{
     fanstate = 0;
+    }
    }
-   }
-  }
-  else {
+  }else{
   fanstate = 0;
   }
-  digitalWrite(fanpin, fanstate);
+  digitalWrite(fanpin, !fanstate); //invert the logic here due to being a sinking current system
 
 //If there is data in the serial buffer, read it
 if(Serial1.available() > 0){
-  serialread(); //send serial sentence to master
-  if(debug == 1){ //send serial debug to terminal over usb
-  serialdiagnostic();
-   }
+  serialread(); //read serial from master  
   }
-  
+
+if(debug == 1) {
+  serialdiagnostic();
+  }
+
 serialsend();
 }
-////////////main loop
+////////////END main loop
 
 void serialread() { //serial read function. Use this area to adjust what gets listened to
   delay (50);
@@ -146,7 +160,7 @@ void serialread() { //serial read function. Use this area to adjust what gets li
   ch6state = tempch6.toInt();
 }
 void serialdiagnostic() { //diagnostic readout for USB serial port
-    Serial.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/V" + voltage + "/I" + ignitionstate + "/L" + lightsstate + "/H" + highbeamsstate + "/TMP" + tempF + "/CH1" + ch1state + "/CH2" + ch2state + "/CH3" + ch3state + "/CH4" + ch4state + "/CH5" + ch5state + "/CH6" + ch6state + "/");
+    Serial.println((String)"TFourR/" + unitname +" > " + mastername + "/T-" + systemtime + "/V:" + voltagefloat + "/I:" + ignitionstate + "/L:" + lightsstate + "/H:" + highbeamsstate + "/TMP:" + tempF + "/CH1:" + ch1state + "/CH2:" + ch2state + "/CH3:" + ch3state + "/CH4:" + ch4state + "/CH5:" + ch5state + "/CH6:" + ch6state + "/");
   }
 
 void serialsend()  { //send the outgoing serial data
@@ -155,9 +169,16 @@ void serialsend()  { //send the outgoing serial data
 
 void tempread() { //read and do math on the temperature sensor
   tempsenseraw = analogRead(tempsensepin);
-  float voltage = tempsenseraw * 3.3;
-  voltage /= 1024.0;
-  float tempC = (voltage - 0.5) * 100;
+  float tempsensevoltage = tempsenseraw * 3.3;
+  tempsensevoltage /= 1024.0; //turning this off makes the fan temp go bananas
+  float tempC = (tempsensevoltage - 0.5) * 100;
   tempF = (tempC * 9.0 / 5.0) + 32.0;
+  //Serial.println((String)"Temp read:" + tempF);
+}
+
+void voltageread() { //read the voltage coming into the sense port
+  int voltagesenseraw = analogRead(voltagepin);
+  voltage = voltagesenseraw / 63;
+  voltagefloat = voltagesenseraw / 63.80;
 }
 
